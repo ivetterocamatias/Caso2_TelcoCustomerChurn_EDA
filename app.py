@@ -11,6 +11,57 @@ st.set_page_config(
     layout="wide"
 )
 
+# ============================================================
+# FUNCIÓN PARA CLASIFICAR VARIABLES
+# ============================================================
+
+def classify_variables(df):
+
+    # Variables numéricas que utilizaremos en el análisis
+    numeric_vars = [
+        "tenure",
+        "MonthlyCharges",
+        "TotalCharges"
+    ]
+
+    # El resto de las variables se consideran categóricas
+    categorical_vars = [
+        col for col in df.columns
+        if col not in numeric_vars
+    ]
+
+    return numeric_vars, categorical_vars
+
+
+# ============================================================
+# CLASE DataAnalyzer
+# ============================================================
+
+class DataAnalyzer:
+
+    def __init__(self, df):
+
+        # Guardamos el DataFrame dentro del objeto
+        self.df = df
+
+    def descriptive_statistics(self):
+
+        return self.df.describe()
+
+    def missing_values(self):
+
+        return self.df.isnull().sum()
+
+    def variable_types(self):
+
+        return self.df.dtypes
+
+    def duplicated_rows(self):
+
+        return self.df.duplicated().sum()
+
+# DESPUÉS VIENE TU TÍTULO
+
 st.markdown(
     "<h1 style='text-align: center;'>"
     "Telco Customer Churn: Análisis Exploratorio de Datos"
