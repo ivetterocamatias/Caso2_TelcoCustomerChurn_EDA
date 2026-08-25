@@ -64,7 +64,7 @@ if modulo == "🏠 Home":
     **Año:** 2026
     """)
 
-     st.subheader("Sobre el dataset")
+    st.subheader("Sobre el dataset")
 
     st.write("""
     El dataset contiene información sobre clientes de una empresa
