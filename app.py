@@ -44,7 +44,7 @@ if opcion == "🏠 Home":
     
     st.subheader("""
     
-    ### Breve descripción del objetivo del análisis
+    Breve descripción del objetivo del análisis
 
     Esta aplicación tiene como objetivo realizar un Análisis
     Exploratorio de Datos (EDA) del dataset Telco Customer Churn,
