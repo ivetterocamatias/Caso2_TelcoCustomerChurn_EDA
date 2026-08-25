@@ -19,8 +19,7 @@ def classify_variables(df):
 
     # Identificador costumerID
 
-    # Corregimos customerID porque identifica a cada cliente y
-    # no debe utilizarse para análisis estadístico porque
+    # No usamos customerID para análisis estadístico porque
     # no representa una característica del cliente.
     
     id_vars = [
@@ -39,6 +38,7 @@ def classify_variables(df):
     categorical_vars = [
         col for col in df.columns
         if col not in numeric_vars
+        and col not in id_vars
     ]
 
     return numeric_vars, categorical_vars
