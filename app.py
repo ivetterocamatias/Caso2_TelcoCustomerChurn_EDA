@@ -66,11 +66,11 @@ if modulo == "🏠 Home":
 
      st.subheader("Sobre el dataset")
 
-    st.write(
-        "El dataset contiene información sobre clientes de una empresa
-        de telecomunicaciones, incluyendo características demográficas,
-        servicios contratados, permanencia, facturación y estado de churn."
-    )
+    st.write("""
+    El dataset contiene información sobre clientes de una empresa
+    de telecomunicaciones, incluyendo características demográficas,
+    servicios contratados, permanencia, facturación y estado de churn."
+    """)
     
     st.markdown("""
     ### Tecnologías utilizadas
