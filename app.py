@@ -11,7 +11,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("Telco Customer Churn — Análisis Exploratorio de Datos")
+st.title("Telco Customer Churn: Análisis Exploratorio de Datos")
 col1, col2, col3 = st.columns([1,2,1])
 
 with col2:
