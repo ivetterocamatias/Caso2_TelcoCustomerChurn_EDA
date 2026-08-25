@@ -17,6 +17,17 @@ st.set_page_config(
 
 def classify_variables(df):
 
+    # Identificador costumerID
+
+    # Corregimos customerID porque identifica a cada cliente y
+    # no debe utilizarse para análisis estadístico porque
+    # no representa una característica del cliente.
+    
+    id_vars = [
+        "customerID"
+    ]
+
+    
     # Variables numéricas que utilizaremos en el análisis
     numeric_vars = [
         "tenure",
