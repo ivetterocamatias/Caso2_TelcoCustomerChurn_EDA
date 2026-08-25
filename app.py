@@ -102,22 +102,39 @@ elif opcion == "📂 Carga del dataset":
 
     if archivo is not None:
 
-        df = pd.read_csv(archivo)
+    df = pd.read_csv(archivo)
+
+    st.session_state["df"] = df
+
+    st.success("✅ Dataset cargado correctamente.")
+
+    st.subheader("Vista previa del dataset")
+
+    st.dataframe(df.head())
+
+    st.subheader("Dimensiones del dataset")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric("Número de filas", df.shape[0])
+
+    with col2:
+        st.metric("Número de columnas", df.shape[1])
         
-        st.session_state["df"] = df
+elif opcion == "📊 Análisis Exploratorio":
 
-        st.success("✅ Dataset cargado correctamente.")
+    st.header("Análisis Exploratorio de Datos")
 
-        st.subheader("Vista previa del dataset")
+    if "df" not in st.session_state:
 
-        st.dataframe(df.head())
+        st.warning(
+            "⚠️ Primero debes cargar el dataset "
+            "en la sección 'Carga del dataset'."
+        )
 
-        st.subheader("Dimensiones del dataset")
+    else:
 
-        col1, col2 = st.columns(2)
+        df = st.session_state["df"]
 
-        with col1:
-            st.metric("Número de filas", df.shape[0])
-
-        with col2:
-            st.metric("Número de columnas", df.shape[1])
+        st.success("✅ Dataset disponible para el análisis.")
