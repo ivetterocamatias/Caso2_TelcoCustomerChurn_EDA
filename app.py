@@ -11,7 +11,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title(
+st.markdown(
     "<h1 style='text-align: center;'>"
     "Telco Customer Churn: Análisis Exploratorio de Datos"
     "</h1>",
