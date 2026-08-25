@@ -577,14 +577,16 @@ elif opcion == "📊 Análisis Exploratorio":
 
             # Interpretación visual -  breve descripción
 
-            st.subheader("Interperetación")
+            st.subheader("Interpretación")
 
             st.write(
-                f"El histograma muestra la distribución de "
-                "los valores de {selected_numeric} para "
-                "identificar dónde se concentra la mayor parte "
-                "de los valores, el grado de dispersión, posibles "
-                "asimetrías y la presencia de valores extremos."
+                f"""
+                El histograma muestra la distribución de
+                los valores de ***{selected_numeric}*** para
+                identificar dónde se concentra la mayor parte
+                de los valores, el grado de dispersión, posibles
+                asimetrías y la presencia de valores extremos.
+                """
             )
 
         
