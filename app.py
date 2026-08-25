@@ -156,6 +156,16 @@ elif opcion == "📂 Carga del dataset":
     if archivo is not None:
 
         df = pd.read_csv(archivo)
+
+    # Conversión de TotalCharges a variable numérica
+
+        df["TotalCharges"] = pd.to_numeric(
+            df["TotalCharges"],
+            errors="coerce"
+        )
+
+    # Guardamos el DataFrame en la memoria de Streamlit
+    # para poder utilizarlo en los demás módulos.
     
         st.session_state["df"] = df
     
