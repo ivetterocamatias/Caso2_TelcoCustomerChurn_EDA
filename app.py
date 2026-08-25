@@ -12,9 +12,8 @@ st.set_page_config(
     layout="wide"
 )
 
-# ============================================================
-# FUNCIÓN PARA CLASIFICAR VARIABLES
-# ============================================================
+
+# Clasificación de variables
 
 def classify_variables(df):
 
@@ -34,9 +33,7 @@ def classify_variables(df):
     return numeric_vars, categorical_vars
 
 
-# ============================================================
 # CLASE DataAnalyzer
-# ============================================================
 
 class DataAnalyzer:
 
@@ -61,7 +58,7 @@ class DataAnalyzer:
 
         return self.df.duplicated().sum()
 
-# DESPUÉS VIENE TU TÍTULO
+# Ajustes de formato de título
 
 st.markdown(
     "<h1 style='text-align: center;'>"
@@ -207,10 +204,8 @@ elif opcion == "📊 Análisis Exploratorio":
         # Clasificamos las variables mediante nuestra función
         numeric_vars, categorical_vars = classify_variables(df)
 
-        # ----------------------------------------------------
-        # CREACIÓN DE LOS 10 TABS DEL EDA
-        # ----------------------------------------------------
-
+        # Creamos los 10 tabs del EDA
+   
         tabs = st.tabs([
             "1. Información general",
             "2. Clasificación",
@@ -224,17 +219,16 @@ elif opcion == "📊 Análisis Exploratorio":
             "10. Hallazgos"
         ])
 
-        # ====================================================
-        # ÍTEM 1 — INFORMACIÓN GENERAL
-        # ====================================================
+      
+        # ÍTEM 1 — Iformación general del dataset
+ 
 
         with tabs[0]:
 
             st.header("1. Información general del dataset")
 
-            # -----------------------------------------------
+
             # Dimensiones
-            # -----------------------------------------------
 
             col1, col2, col3 = st.columns(3)
 
@@ -256,9 +250,9 @@ elif opcion == "📊 Análisis Exploratorio":
                     analyzer.duplicated_rows()
                 )
 
-            # -----------------------------------------------
+
             # Información general utilizando .info()
-            # -----------------------------------------------
+
 
             st.subheader("Información general")
 
@@ -270,9 +264,9 @@ elif opcion == "📊 Análisis Exploratorio":
 
             st.text(info_text)
 
-            # -----------------------------------------------
+
             # Tipos de datos
-            # -----------------------------------------------
+
 
             st.subheader("Tipos de datos")
 
@@ -286,9 +280,8 @@ elif opcion == "📊 Análisis Exploratorio":
                 use_container_width=True
             )
 
-            # -----------------------------------------------
-            # Valores nulos
-            # -----------------------------------------------
+
+            # Conteo de valores nulos
 
             st.subheader("Conteo de valores nulos")
 
@@ -302,19 +295,23 @@ elif opcion == "📊 Análisis Exploratorio":
                 use_container_width=True
             )
 
-        # ====================================================
-        # ÍTEM 2 — CLASIFICACIÓN DE VARIABLES
-        # ====================================================
 
+        # ÍTEM 2 — Clasificación de variables
+        
         with tabs[1]:
 
             st.header("2. Clasificación de variables")
 
             col1, col2 = st.columns(2)
 
-            # -----------------------------------------------
-            # Variables numéricas
-            # -----------------------------------------------
+            
+            # Uso de función personalizada
+            
+            numeric_vars, categorical_vars = classify_variables(df)
+
+            
+            # Identificación de variables: Variables numéricas
+            
 
             with col1:
 
@@ -327,9 +324,9 @@ elif opcion == "📊 Análisis Exploratorio":
                 for variable in numeric_vars:
                     st.write(f"• {variable}")
 
-            # -----------------------------------------------
-            # Variables categóricas
-            # -----------------------------------------------
+            
+            # Identificación de variales: Variables categóricas
+            
 
             with col2:
 
@@ -342,17 +339,20 @@ elif opcion == "📊 Análisis Exploratorio":
                 for variable in categorical_vars:
                     st.write(f"• {variable}")
 
-        # ====================================================
-        # ÍTEM 3 — ESTADÍSTICAS DESCRIPTIVAS
-        # ====================================================
+        
+        # ÍTEM 3 — Estadísticas descriptivas
 
         with tabs[2]:
 
             st.header("3. Estadísticas descriptivas")
 
-            # Utilizamos el método de nuestra clase
+            # Utilizamos .describe()
+
+            descriptive_stats = df[numeric_vars].describe()
+
+            # Mostramos las estadísticas descriptivas
             st.dataframe(
-                analyzer.descriptive_statistics(),
+                descriptive_stats,
                 use_container_width=True
             )
 
@@ -383,6 +383,8 @@ elif opcion == "📊 Análisis Exploratorio":
             else:
                 mode_value = "No disponible"
 
+            # Mostramos los resultados
+
             col1, col2, col3 = st.columns(3)
 
             with col1:
@@ -409,19 +411,24 @@ elif opcion == "📊 Análisis Exploratorio":
                     mode_display
                 )
 
-        # ====================================================
-        # ÍTEM 4 — VALORES FALTANTES
-        # ====================================================
+        
+        # ÍTEM 4 — Análisis de valores faltantes
 
         with tabs[3]:
 
             st.header("4. Análisis de valores faltantes")
 
+            # Conteo de valores faltantes
+
             missing_count = analyzer.missing_values()
+
+            # Cálculo del porcentaje de valores faltantes
 
             missing_percentage = (
                 missing_count / len(df) * 100
             )
+
+            # Creación de tabla resumen
 
             missing_df = pd.DataFrame({
                 "Variable": df.columns,
@@ -429,11 +436,19 @@ elif opcion == "📊 Análisis Exploratorio":
                 "Porcentaje (%)": missing_percentage.values
             })
 
-            # Mostramos únicamente variables con faltantes
+            # Selección de variables con valores faltantes
+            # ----------------------------------------------------
+            # Las variables con cero valores faltantes no se incluyen
+            # en esta tabla
+            
             missing_only = missing_df[
                 missing_df["Valores faltantes"] > 0
             ]
 
+    
+            # Si no existen valores faltantes en ninguna variable,
+            # mostramos un mensaje informativo.
+            
             if missing_only.empty:
 
                 st.success(
@@ -441,6 +456,8 @@ elif opcion == "📊 Análisis Exploratorio":
                 )
 
             else:
+
+                st.subheader("Conteo y porcentaje de valores faltantes")
 
                 st.dataframe(
                     missing_only,
@@ -462,19 +479,39 @@ elif opcion == "📊 Análisis Exploratorio":
                     "Valores faltantes por variable"
                 )
 
+                ax.set_xlabel(
+                    "Cantidad de valores faltantes"
+                )
+        
+                ax.set_ylabel(
+                    "Variable"
+                )
+                
                 st.pyplot(fig)
 
-        # ====================================================
-        # ÍTEM 5 — DISTRIBUCIÓN DE VARIABLES NUMÉRICAS
-        # ====================================================
+                # Discusión breve
 
+                st.subheader("Discusión")
+        
+                st.write(
+                    "Los valores faltantes deben ser identificados y "
+                    "evaluados antes de realizar análisis estadísticos "
+                    "o visualizaciones, ya que pueden afectar la "
+                    "interpretación de los resultados. La magnitud y "
+                    "distribución de los datos faltantes determinará "
+                    "si es necesario aplicar algún tratamiento." 
+                )
+
+        
+        # ÍTEM 5 — Distribución de variables numéricas
+        
         with tabs[4]:
 
             st.header(
                 "5. Distribución de variables numéricas"
             )
 
-            # Widget obligatorio: selectbox
+            # Selección de variable con selectbox
 
             selected_numeric = st.selectbox(
                 "Selecciona una variable numérica:",
@@ -482,7 +519,7 @@ elif opcion == "📊 Análisis Exploratorio":
                 key="distribution_variable"
             )
 
-            # Widget obligatorio: slider
+            # Configuración del histograma
 
             bins = st.slider(
                 "Número de intervalos del histograma:",
@@ -502,6 +539,8 @@ elif opcion == "📊 Análisis Exploratorio":
                 ax=ax
             )
 
+            # Configuración del gráfico
+
             ax.set_title(
                 f"Distribución de {selected_numeric}"
             )
@@ -514,17 +553,24 @@ elif opcion == "📊 Análisis Exploratorio":
                 "Frecuencia"
             )
 
+
             st.pyplot(fig)
+
+            # Interpretación visual -  breve descripción
+
+            st.subheader("Interperetación")
 
             st.write(
                 f"El histograma muestra la distribución de "
-                f"los valores de {selected_numeric}."
+                "los valores de {selected_numeric} para "
+                "identificar dónde se concentra la mayor parte "
+                "de los valores, el grado de dispersión, posibles "
+                "asimetrías y la presencia de valores extremos."
             )
 
-        # ====================================================
-        # ÍTEM 6 — VARIABLES CATEGÓRICAS
-        # ====================================================
-
+        
+        # ÍTEM 6 — Análisis de variables categóricas
+       
         with tabs[5]:
 
             st.header(
@@ -543,7 +589,7 @@ elif opcion == "📊 Análisis Exploratorio":
                 .value_counts()
             )
 
-            # Porcentajes
+            # Proporciones - Porcentajes
             percentages = (
                 df[selected_categorical]
                 .value_counts(normalize=True)
@@ -583,9 +629,8 @@ elif opcion == "📊 Análisis Exploratorio":
 
             st.pyplot(fig)
 
-        # ====================================================
-        # ÍTEM 7 — NUMÉRICA VS CHURN
-        # ====================================================
+
+        # ÍTEM 7 — Análisis bivariado (numérico vs categórico)
 
         with tabs[6]:
 
@@ -632,10 +677,9 @@ elif opcion == "📊 Análisis Exploratorio":
                 use_container_width=True
             )
 
-        # ====================================================
-        # ÍTEM 8 — CATEGÓRICA VS CHURN
-        # ====================================================
 
+        # ÍTEM 8 — Análisis bivariado (categórico vs categórico)
+        
         with tabs[7]:
 
             st.header(
@@ -648,9 +692,7 @@ elif opcion == "📊 Análisis Exploratorio":
                 key="categorical_churn_variable"
             )
 
-            # -----------------------------------------------
             # Gráfico de conteos
-            # -----------------------------------------------
 
             fig, ax = plt.subplots()
 
@@ -672,9 +714,7 @@ elif opcion == "📊 Análisis Exploratorio":
 
             st.pyplot(fig)
 
-            # -----------------------------------------------
             # Proporción de Churn dentro de cada categoría
-            # -----------------------------------------------
 
             churn_rate = pd.crosstab(
                 df[selected_categorical_churn],
@@ -693,9 +733,8 @@ elif opcion == "📊 Análisis Exploratorio":
                 use_container_width=True
             )
 
-        # ====================================================
-        # ÍTEM 9 — ANÁLISIS DINÁMICO
-        # ====================================================
+
+        # ÍTEM 9 — Análisis basado en parámetros seleccionados
 
         with tabs[8]:
 
@@ -708,9 +747,8 @@ elif opcion == "📊 Análisis Exploratorio":
                 "dinámicamente el dataset."
             )
 
-            # -----------------------------------------------
-            # SELECTBOX
-            # -----------------------------------------------
+
+            # Uso de selectox
 
             dynamic_variable = st.selectbox(
                 "Selecciona una variable categórica:",
@@ -718,9 +756,8 @@ elif opcion == "📊 Análisis Exploratorio":
                 key="dynamic_categorical"
             )
 
-            # -----------------------------------------------
-            # MULTISELECT
-            # -----------------------------------------------
+
+            # Uso de multiselect
 
             available_categories = sorted(
                 df[dynamic_variable]
@@ -735,9 +772,7 @@ elif opcion == "📊 Análisis Exploratorio":
                 default=available_categories
             )
 
-            # -----------------------------------------------
             # SLIDER
-            # -----------------------------------------------
 
             min_tenure = int(
                 df["tenure"].min()
@@ -754,17 +789,14 @@ elif opcion == "📊 Análisis Exploratorio":
                 value=(min_tenure, max_tenure)
             )
 
-            # -----------------------------------------------
+
             # CHECKBOX
-            # -----------------------------------------------
 
             show_filtered_data = st.checkbox(
                 "Mostrar datos filtrados"
             )
 
-            # -----------------------------------------------
             # FILTRADO
-            # -----------------------------------------------
 
             filtered_df = df[
                 df[dynamic_variable]
@@ -776,9 +808,7 @@ elif opcion == "📊 Análisis Exploratorio":
                 )
             ]
 
-            # -----------------------------------------------
             # RESULTADOS
-            # -----------------------------------------------
 
             col1, col2 = st.columns(2)
 
@@ -815,9 +845,8 @@ elif opcion == "📊 Análisis Exploratorio":
                     use_container_width=True
                 )
 
-            # -----------------------------------------------
+
             # GRÁFICO DINÁMICO
-            # -----------------------------------------------
 
             if not filtered_df.empty:
 
@@ -842,9 +871,8 @@ elif opcion == "📊 Análisis Exploratorio":
 
                 st.pyplot(fig)
 
-        # ====================================================
-        # ÍTEM 10 — HALLAZGOS CLAVE
-        # ====================================================
+
+        # ÍTEM 10 — Hallazgos clave
 
         with tabs[9]:
 
@@ -859,9 +887,7 @@ elif opcion == "📊 Análisis Exploratorio":
                 """
             )
 
-            # -----------------------------------------------
             # Distribución general del Churn
-            # -----------------------------------------------
 
             churn_distribution = (
                 df["Churn"]
@@ -895,9 +921,8 @@ elif opcion == "📊 Análisis Exploratorio":
                     f"{churn_no:.2f}%"
                 )
 
-            # -----------------------------------------------
+
             # Gráfico general de Churn
-            # -----------------------------------------------
 
             fig, ax = plt.subplots()
 
@@ -913,9 +938,8 @@ elif opcion == "📊 Análisis Exploratorio":
 
             st.pyplot(fig)
 
-            # -----------------------------------------------
+
             # Mensaje de interpretación
-            # -----------------------------------------------
 
             st.info(
                 "Los hallazgos definitivos deben redactarse "
@@ -924,9 +948,8 @@ elif opcion == "📊 Análisis Exploratorio":
             )
 
 
-# ============================================================
-# MÓDULO 4: CONCLUSIONES
-# ============================================================
+
+# CONCLUSIONES
 
 elif opcion == "📝 Conclusiones":
 
