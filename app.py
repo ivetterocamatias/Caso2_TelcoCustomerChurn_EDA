@@ -42,7 +42,7 @@ opcion = st.sidebar.radio(
     ]
 )
 
-# Información en sección Home
+# Módulo 1: Información en sección Home
 
 if opcion == "🏠 Home":
 
@@ -86,6 +86,8 @@ if opcion == "🏠 Home":
     - 🐼 Pandas
     """)
 
+# Módulo 2: Carga del dataset
+
 elif opcion == "📂 Carga del dataset":
 
     st.header("Carga del dataset")
@@ -95,11 +97,15 @@ elif opcion == "📂 Carga del dataset":
         "para comenzar el análisis."
     )
 
+# Uso de st.file_uploader() para cargar el archivo .csv
+    
     archivo = st.file_uploader(
         "Cargar archivo CSV",
         type=["csv"]
     )
 
+    # Validación del archivo cargado correctamente
+    
     if archivo is not None:
 
         df = pd.read_csv(archivo)
@@ -107,11 +113,15 @@ elif opcion == "📂 Carga del dataset":
         st.session_state["df"] = df
     
         st.success("✅ Dataset cargado correctamente.")
+
+# Mostrar una vista previa del dataset (head)
     
         st.subheader("Vista previa del dataset")
     
         st.dataframe(df.head())
-    
+
+# Mostrar dimensiones del dataset (filas y columnas)
+        
         st.subheader("Dimensiones del dataset")
     
         col1, col2 = st.columns(2)
@@ -121,6 +131,8 @@ elif opcion == "📂 Carga del dataset":
     
         with col2:
             st.metric("Número de columnas", df.shape[1])
+
+# Análisis Exploratorio de Datos (EDA)
         
 elif opcion == "📊 Análisis Exploratorio":
 
@@ -129,9 +141,8 @@ elif opcion == "📊 Análisis Exploratorio":
     if "df" not in st.session_state:
 
         st.warning(
-            "⚠️ Primero debes cargar el dataset "
-            "en la sección 'Carga del dataset'."
-        )
+            "⚠️ Primero debes cargar el dataset. "
+            )
 
     else:
 
