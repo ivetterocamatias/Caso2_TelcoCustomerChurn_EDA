@@ -40,8 +40,7 @@ opcion = st.sidebar.radio(
 
 if opcion == "🏠 Home":
 
-    st.header("Telco Customer Churn: Análisis Exploratorio de Datos")
-    
+       
     st.subheader("""
     
     Breve descripción del objetivo del análisis
