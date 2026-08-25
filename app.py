@@ -103,6 +103,8 @@ elif opcion == "📂 Carga del dataset":
     if archivo is not None:
 
         df = pd.read_csv(archivo)
+        
+        st.session_state["df"] = df
 
         st.success("✅ Dataset cargado correctamente.")
 
