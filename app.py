@@ -38,7 +38,7 @@ opcion = st.sidebar.radio(
 
 # Información en sección Home
 
-if modulo == "🏠 Home":
+if opcion == "🏠 Home":
 
     st.header("Telco Customer Churn: Análisis Exploratorio de Datos")
     
