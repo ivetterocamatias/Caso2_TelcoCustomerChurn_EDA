@@ -146,6 +146,769 @@ elif opcion == "📊 Análisis Exploratorio":
 
     else:
 
+        # Recuperamos el DataFrame almacenado
         df = st.session_state["df"]
 
-        st.success("✅ Dataset disponible para el análisis.")
+        # Creamos un objeto de la clase DataAnalyzer
+        analyzer = DataAnalyzer(df)
+
+        # Clasificamos las variables mediante nuestra función
+        numeric_vars, categorical_vars = classify_variables(df)
+
+        # ----------------------------------------------------
+        # CREACIÓN DE LOS 10 TABS DEL EDA
+        # ----------------------------------------------------
+
+        tabs = st.tabs([
+            "1. Información general",
+            "2. Clasificación",
+            "3. Estadísticas",
+            "4. Valores faltantes",
+            "5. Distribución numérica",
+            "6. Variables categóricas",
+            "7. Numérica vs Churn",
+            "8. Categórica vs Churn",
+            "9. Análisis dinámico",
+            "10. Hallazgos"
+        ])
+
+        # ====================================================
+        # ÍTEM 1 — INFORMACIÓN GENERAL
+        # ====================================================
+
+        with tabs[0]:
+
+            st.header("1. Información general del dataset")
+
+            # -----------------------------------------------
+            # Dimensiones
+            # -----------------------------------------------
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                st.metric(
+                    "Número de filas",
+                    df.shape[0]
+                )
+
+            with col2:
+                st.metric(
+                    "Número de columnas",
+                    df.shape[1]
+                )
+
+            with col3:
+                st.metric(
+                    "Filas duplicadas",
+                    analyzer.duplicated_rows()
+                )
+
+            # -----------------------------------------------
+            # Información general utilizando .info()
+            # -----------------------------------------------
+
+            st.subheader("Información general")
+
+            buffer = io.StringIO()
+
+            df.info(buf=buffer)
+
+            info_text = buffer.getvalue()
+
+            st.text(info_text)
+
+            # -----------------------------------------------
+            # Tipos de datos
+            # -----------------------------------------------
+
+            st.subheader("Tipos de datos")
+
+            types_df = pd.DataFrame({
+                "Variable": df.columns,
+                "Tipo de dato": df.dtypes.astype(str).values
+            })
+
+            st.dataframe(
+                types_df,
+                use_container_width=True
+            )
+
+            # -----------------------------------------------
+            # Valores nulos
+            # -----------------------------------------------
+
+            st.subheader("Conteo de valores nulos")
+
+            null_df = pd.DataFrame({
+                "Variable": df.columns,
+                "Valores nulos": df.isnull().sum().values
+            })
+
+            st.dataframe(
+                null_df,
+                use_container_width=True
+            )
+
+        # ====================================================
+        # ÍTEM 2 — CLASIFICACIÓN DE VARIABLES
+        # ====================================================
+
+        with tabs[1]:
+
+            st.header("2. Clasificación de variables")
+
+            col1, col2 = st.columns(2)
+
+            # -----------------------------------------------
+            # Variables numéricas
+            # -----------------------------------------------
+
+            with col1:
+
+                st.subheader("Variables numéricas")
+
+                st.write(
+                    f"Cantidad: {len(numeric_vars)}"
+                )
+
+                for variable in numeric_vars:
+                    st.write(f"• {variable}")
+
+            # -----------------------------------------------
+            # Variables categóricas
+            # -----------------------------------------------
+
+            with col2:
+
+                st.subheader("Variables categóricas")
+
+                st.write(
+                    f"Cantidad: {len(categorical_vars)}"
+                )
+
+                for variable in categorical_vars:
+                    st.write(f"• {variable}")
+
+        # ====================================================
+        # ÍTEM 3 — ESTADÍSTICAS DESCRIPTIVAS
+        # ====================================================
+
+        with tabs[2]:
+
+            st.header("3. Estadísticas descriptivas")
+
+            # Utilizamos el método de nuestra clase
+            st.dataframe(
+                analyzer.descriptive_statistics(),
+                use_container_width=True
+            )
+
+            st.subheader("Medidas principales")
+
+            # Selección de variable numérica
+            selected_stat_var = st.selectbox(
+                "Selecciona una variable numérica:",
+                numeric_vars,
+                key="statistics_variable"
+            )
+
+            # Calculamos media utilizando NumPy
+            mean_value = np.mean(
+                df[selected_stat_var].dropna()
+            )
+
+            # Calculamos mediana utilizando NumPy
+            median_value = np.median(
+                df[selected_stat_var].dropna()
+            )
+
+            # Calculamos moda utilizando Pandas
+            mode_value = df[selected_stat_var].mode()
+
+            if not mode_value.empty:
+                mode_value = mode_value.iloc[0]
+            else:
+                mode_value = "No disponible"
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                st.metric(
+                    "Media",
+                    f"{mean_value:.2f}"
+                )
+
+            with col2:
+                st.metric(
+                    "Mediana",
+                    f"{median_value:.2f}"
+                )
+
+            with col3:
+
+                if isinstance(mode_value, (int, float, np.integer, np.floating)):
+                    mode_display = f"{mode_value:.2f}"
+                else:
+                    mode_display = str(mode_value)
+
+                st.metric(
+                    "Moda",
+                    mode_display
+                )
+
+        # ====================================================
+        # ÍTEM 4 — VALORES FALTANTES
+        # ====================================================
+
+        with tabs[3]:
+
+            st.header("4. Análisis de valores faltantes")
+
+            missing_count = analyzer.missing_values()
+
+            missing_percentage = (
+                missing_count / len(df) * 100
+            )
+
+            missing_df = pd.DataFrame({
+                "Variable": df.columns,
+                "Valores faltantes": missing_count.values,
+                "Porcentaje (%)": missing_percentage.values
+            })
+
+            # Mostramos únicamente variables con faltantes
+            missing_only = missing_df[
+                missing_df["Valores faltantes"] > 0
+            ]
+
+            if missing_only.empty:
+
+                st.success(
+                    "✅ No se encontraron valores faltantes."
+                )
+
+            else:
+
+                st.dataframe(
+                    missing_only,
+                    use_container_width=True
+                )
+
+                # Gráfico de valores faltantes
+
+                fig, ax = plt.subplots()
+
+                sns.barplot(
+                    data=missing_only,
+                    x="Valores faltantes",
+                    y="Variable",
+                    ax=ax
+                )
+
+                ax.set_title(
+                    "Valores faltantes por variable"
+                )
+
+                st.pyplot(fig)
+
+        # ====================================================
+        # ÍTEM 5 — DISTRIBUCIÓN DE VARIABLES NUMÉRICAS
+        # ====================================================
+
+        with tabs[4]:
+
+            st.header(
+                "5. Distribución de variables numéricas"
+            )
+
+            # Widget obligatorio: selectbox
+
+            selected_numeric = st.selectbox(
+                "Selecciona una variable numérica:",
+                numeric_vars,
+                key="distribution_variable"
+            )
+
+            # Widget obligatorio: slider
+
+            bins = st.slider(
+                "Número de intervalos del histograma:",
+                min_value=5,
+                max_value=50,
+                value=20
+            )
+
+            # Crear gráfico
+            fig, ax = plt.subplots()
+
+            sns.histplot(
+                data=df,
+                x=selected_numeric,
+                bins=bins,
+                kde=True,
+                ax=ax
+            )
+
+            ax.set_title(
+                f"Distribución de {selected_numeric}"
+            )
+
+            ax.set_xlabel(
+                selected_numeric
+            )
+
+            ax.set_ylabel(
+                "Frecuencia"
+            )
+
+            st.pyplot(fig)
+
+            st.write(
+                f"El histograma muestra la distribución de "
+                f"los valores de {selected_numeric}."
+            )
+
+        # ====================================================
+        # ÍTEM 6 — VARIABLES CATEGÓRICAS
+        # ====================================================
+
+        with tabs[5]:
+
+            st.header(
+                "6. Análisis de variables categóricas"
+            )
+
+            selected_categorical = st.selectbox(
+                "Selecciona una variable categórica:",
+                categorical_vars,
+                key="categorical_variable"
+            )
+
+            # Conteos
+            counts = (
+                df[selected_categorical]
+                .value_counts()
+            )
+
+            # Porcentajes
+            percentages = (
+                df[selected_categorical]
+                .value_counts(normalize=True)
+                * 100
+            )
+
+            categorical_summary = pd.DataFrame({
+                "Conteo": counts,
+                "Porcentaje (%)": percentages.round(2)
+            })
+
+            st.subheader("Conteos y proporciones")
+
+            st.dataframe(
+                categorical_summary,
+                use_container_width=True
+            )
+
+            # Gráfico de barras
+
+            fig, ax = plt.subplots()
+
+            sns.countplot(
+                data=df,
+                x=selected_categorical,
+                ax=ax
+            )
+
+            ax.set_title(
+                f"Distribución de {selected_categorical}"
+            )
+
+            ax.tick_params(
+                axis="x",
+                rotation=45
+            )
+
+            st.pyplot(fig)
+
+        # ====================================================
+        # ÍTEM 7 — NUMÉRICA VS CHURN
+        # ====================================================
+
+        with tabs[6]:
+
+            st.header(
+                "7. Análisis bivariado: variable numérica vs Churn"
+            )
+
+            selected_numeric_churn = st.selectbox(
+                "Selecciona una variable numérica:",
+                numeric_vars,
+                key="numeric_churn_variable"
+            )
+
+            # Boxplot
+            fig, ax = plt.subplots()
+
+            sns.boxplot(
+                data=df,
+                x="Churn",
+                y=selected_numeric_churn,
+                ax=ax
+            )
+
+            ax.set_title(
+                f"{selected_numeric_churn} vs Churn"
+            )
+
+            st.pyplot(fig)
+
+            # Tabla comparativa
+
+            comparison = (
+                df.groupby("Churn")[selected_numeric_churn]
+                .agg(["mean", "median", "std"])
+                .round(2)
+            )
+
+            st.subheader(
+                "Comparación estadística entre grupos"
+            )
+
+            st.dataframe(
+                comparison,
+                use_container_width=True
+            )
+
+        # ====================================================
+        # ÍTEM 8 — CATEGÓRICA VS CHURN
+        # ====================================================
+
+        with tabs[7]:
+
+            st.header(
+                "8. Análisis bivariado: variable categórica vs Churn"
+            )
+
+            selected_categorical_churn = st.selectbox(
+                "Selecciona una variable categórica:",
+                categorical_vars,
+                key="categorical_churn_variable"
+            )
+
+            # -----------------------------------------------
+            # Gráfico de conteos
+            # -----------------------------------------------
+
+            fig, ax = plt.subplots()
+
+            sns.countplot(
+                data=df,
+                x=selected_categorical_churn,
+                hue="Churn",
+                ax=ax
+            )
+
+            ax.set_title(
+                f"{selected_categorical_churn} vs Churn"
+            )
+
+            ax.tick_params(
+                axis="x",
+                rotation=45
+            )
+
+            st.pyplot(fig)
+
+            # -----------------------------------------------
+            # Proporción de Churn dentro de cada categoría
+            # -----------------------------------------------
+
+            churn_rate = pd.crosstab(
+                df[selected_categorical_churn],
+                df["Churn"],
+                normalize="index"
+            ) * 100
+
+            churn_rate = churn_rate.round(2)
+
+            st.subheader(
+                "Proporción de Churn por categoría (%)"
+            )
+
+            st.dataframe(
+                churn_rate,
+                use_container_width=True
+            )
+
+        # ====================================================
+        # ÍTEM 9 — ANÁLISIS DINÁMICO
+        # ====================================================
+
+        with tabs[8]:
+
+            st.header(
+                "9. Análisis basado en parámetros seleccionados"
+            )
+
+            st.write(
+                "Utiliza los controles para explorar "
+                "dinámicamente el dataset."
+            )
+
+            # -----------------------------------------------
+            # SELECTBOX
+            # -----------------------------------------------
+
+            dynamic_variable = st.selectbox(
+                "Selecciona una variable categórica:",
+                categorical_vars,
+                key="dynamic_categorical"
+            )
+
+            # -----------------------------------------------
+            # MULTISELECT
+            # -----------------------------------------------
+
+            available_categories = sorted(
+                df[dynamic_variable]
+                .dropna()
+                .unique()
+                .tolist()
+            )
+
+            selected_categories = st.multiselect(
+                "Selecciona una o más categorías:",
+                available_categories,
+                default=available_categories
+            )
+
+            # -----------------------------------------------
+            # SLIDER
+            # -----------------------------------------------
+
+            min_tenure = int(
+                df["tenure"].min()
+            )
+
+            max_tenure = int(
+                df["tenure"].max()
+            )
+
+            tenure_range = st.slider(
+                "Rango de permanencia (tenure):",
+                min_value=min_tenure,
+                max_value=max_tenure,
+                value=(min_tenure, max_tenure)
+            )
+
+            # -----------------------------------------------
+            # CHECKBOX
+            # -----------------------------------------------
+
+            show_filtered_data = st.checkbox(
+                "Mostrar datos filtrados"
+            )
+
+            # -----------------------------------------------
+            # FILTRADO
+            # -----------------------------------------------
+
+            filtered_df = df[
+                df[dynamic_variable]
+                .isin(selected_categories)
+                &
+                df["tenure"].between(
+                    tenure_range[0],
+                    tenure_range[1]
+                )
+            ]
+
+            # -----------------------------------------------
+            # RESULTADOS
+            # -----------------------------------------------
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+
+                st.metric(
+                    "Clientes seleccionados",
+                    len(filtered_df)
+                )
+
+            with col2:
+
+                churn_rate_dynamic = (
+                    filtered_df["Churn"]
+                    .eq("Yes")
+                    .mean() * 100
+                )
+
+                st.metric(
+                    "Churn (%)",
+                    f"{churn_rate_dynamic:.2f}%"
+                )
+
+            # Mostrar tabla únicamente si se marca checkbox
+
+            if show_filtered_data:
+
+                st.subheader(
+                    "Datos filtrados"
+                )
+
+                st.dataframe(
+                    filtered_df,
+                    use_container_width=True
+                )
+
+            # -----------------------------------------------
+            # GRÁFICO DINÁMICO
+            # -----------------------------------------------
+
+            if not filtered_df.empty:
+
+                fig, ax = plt.subplots()
+
+                sns.countplot(
+                    data=filtered_df,
+                    x=dynamic_variable,
+                    hue="Churn",
+                    ax=ax
+                )
+
+                ax.set_title(
+                    f"{dynamic_variable} vs Churn "
+                    f"(datos filtrados)"
+                )
+
+                ax.tick_params(
+                    axis="x",
+                    rotation=45
+                )
+
+                st.pyplot(fig)
+
+        # ====================================================
+        # ÍTEM 10 — HALLAZGOS CLAVE
+        # ====================================================
+
+        with tabs[9]:
+
+            st.header("10. Hallazgos clave")
+
+            st.write(
+                """
+                Esta sección resume los principales patrones
+                identificados durante el análisis exploratorio.
+                Las conclusiones deben basarse en los resultados
+                observados en las tablas y visualizaciones.
+                """
+            )
+
+            # -----------------------------------------------
+            # Distribución general del Churn
+            # -----------------------------------------------
+
+            churn_distribution = (
+                df["Churn"]
+                .value_counts(normalize=True)
+                * 100
+            )
+
+            churn_yes = churn_distribution.get(
+                "Yes",
+                0
+            )
+
+            churn_no = churn_distribution.get(
+                "No",
+                0
+            )
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+
+                st.metric(
+                    "Clientes que abandonaron",
+                    f"{churn_yes:.2f}%"
+                )
+
+            with col2:
+
+                st.metric(
+                    "Clientes que permanecieron",
+                    f"{churn_no:.2f}%"
+                )
+
+            # -----------------------------------------------
+            # Gráfico general de Churn
+            # -----------------------------------------------
+
+            fig, ax = plt.subplots()
+
+            sns.countplot(
+                data=df,
+                x="Churn",
+                ax=ax
+            )
+
+            ax.set_title(
+                "Distribución general de Churn"
+            )
+
+            st.pyplot(fig)
+
+            # -----------------------------------------------
+            # Mensaje de interpretación
+            # -----------------------------------------------
+
+            st.info(
+                "Los hallazgos definitivos deben redactarse "
+                "a partir de la comparación de las variables "
+                "analizadas en los tabs anteriores."
+            )
+
+
+# ============================================================
+# MÓDULO 4: CONCLUSIONES
+# ============================================================
+
+elif opcion == "📝 Conclusiones":
+
+    st.header("Conclusiones finales")
+
+    st.write(
+        """
+        Las siguientes conclusiones deberán construirse a partir
+        de los resultados obtenidos durante el Análisis Exploratorio
+        de Datos.
+        """
+    )
+
+    st.subheader("Conclusión 1")
+    st.write(
+        "Completar después de analizar los resultados."
+    )
+
+    st.subheader("Conclusión 2")
+    st.write(
+        "Completar después de analizar los resultados."
+    )
+
+    st.subheader("Conclusión 3")
+    st.write(
+        "Completar después de analizar los resultados."
+    )
+
+    st.subheader("Conclusión 4")
+    st.write(
+        "Completar después de analizar los resultados."
+    )
+
+    st.subheader("Conclusión 5")
+    st.write(
+        "Completar después de analizar los resultados."
+    )
