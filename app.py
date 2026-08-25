@@ -11,10 +11,12 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("<h1 style='text-align: center;'>"
+st.title(
+    "<h1 style='text-align: center;'>"
     "Telco Customer Churn: Análisis Exploratorio de Datos"
     "</h1>",
-    unsafe_allow_html=True)
+    unsafe_allow_html=True
+)
 
 col1, col2, col3 = st.columns([1,2,1])
 
