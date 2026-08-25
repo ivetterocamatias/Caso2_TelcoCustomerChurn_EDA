@@ -112,9 +112,7 @@ if opcion == "🏠 Home":
     **Nombre completo:** Ivette Isaura Roca Matias
     
     **Especialización:** Especialización en Python for Analytics
-    
-    **Información general de la estudiante:** Ingeniera pesquera cursando una maestría en Ciencia y Tecnología de Alimentos
-    
+      
     **Año:** 2026
     """)
 
