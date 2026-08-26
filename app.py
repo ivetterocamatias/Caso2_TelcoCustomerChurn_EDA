@@ -1037,55 +1037,66 @@ elif opcion == "📊 Análisis Exploratorio":
 
             if not filtered_df.empty:
 
-                # Copia para visualización
+                # Crear copia de los datos filtrados
                 grafico_df = filtered_df.copy()
-            
-                # Traducimos los valores
-                grafico_df[dynamic_variable] = traducir_valores(
+
+                # Traducir los valores de la variable seleccionada
+                grafico_df[dynamic_variable] = grafico_df[
+                    dynamic_variable
+                ].map(valores_es).fillna(
                     grafico_df[dynamic_variable]
                 )
-            
-                grafico_df["Churn"] = traducir_valores(
+
+                # Traducir los valores de Churn
+                grafico_df["Churn"] = grafico_df[
+                    "Churn"
+                ].map(valores_es).fillna(
                     grafico_df["Churn"]
                 )
-            
-                nombre_dynamic = traducir_variable(
+
+                # Obtener nombre de la variable en español
+                nombre_variable = columnas_es.get(
+                    dynamic_variable,
                     dynamic_variable
                 )
-            
+
+                # Crear gráfico
                 fig, ax = plt.subplots()
-            
+
                 sns.countplot(
                     data=grafico_df,
                     x=dynamic_variable,
                     hue="Churn",
                     ax=ax
                 )
-            
+
+                # Título
                 ax.set_title(
-                    f"{nombre_dynamic} vs. abandono "
-                    f"(datos filtrados)"
+                    f"{nombre_variable} vs. situación del cliente"
                 )
-            
+
+                # Etiquetas de los ejes
                 ax.set_xlabel(
-                    nombre_dynamic
+                    nombre_variable
                 )
-            
+
                 ax.set_ylabel(
                     "Cantidad de clientes"
                 )
-            
+
+                # Leyenda
                 ax.legend(
                     title="Situación del cliente"
                 )
-            
+
+                # Rotación de etiquetas
                 ax.tick_params(
                     axis="x",
                     rotation=45
                 )
-            
-                 st.pyplot(fig)
 
+                # Mostrar gráfico
+                st.pyplot(fig)
 
         # ÍTEM 10 — Hallazgos clave
 
