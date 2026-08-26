@@ -22,6 +22,10 @@ El objetivo del proyecto es utilizar un enfoque exploratorio y visual para compr
 
 ![Carga del dataset](screenshots/Carga_del_dataset.png)
 
+### Análisis exploratorio
+
+![Analisis_exploratorio](screenshots/Analisis_exploratorio.png)
+
 ### Conclusiones
 
 ![Hallazgos clave](screenshots/Conclusiones.png)
