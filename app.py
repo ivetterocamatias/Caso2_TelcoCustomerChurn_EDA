@@ -1037,54 +1037,54 @@ elif opcion == "📊 Análisis Exploratorio":
 
             if not filtered_df.empty:
 
-            # Copia para visualización
-            grafico_df = filtered_df.copy()
-        
-            # Traducimos los valores
-            grafico_df[dynamic_variable] = traducir_valores(
-                grafico_df[dynamic_variable]
-            )
-        
-            grafico_df["Churn"] = traducir_valores(
-                grafico_df["Churn"]
-            )
-        
-            nombre_dynamic = traducir_variable(
-                dynamic_variable
-            )
-        
-            fig, ax = plt.subplots()
-        
-            sns.countplot(
-                data=grafico_df,
-                x=dynamic_variable,
-                hue="Churn",
-                ax=ax
-            )
-        
-            ax.set_title(
-                f"{nombre_dynamic} vs. abandono "
-                f"(datos filtrados)"
-            )
-        
-            ax.set_xlabel(
-                nombre_dynamic
-            )
-        
-            ax.set_ylabel(
-                "Cantidad de clientes"
-            )
-        
-            ax.legend(
-                title="Situación del cliente"
-            )
-        
-            ax.tick_params(
-                axis="x",
-                rotation=45
-            )
-        
-             st.pyplot(fig)
+                # Copia para visualización
+                grafico_df = filtered_df.copy()
+            
+                # Traducimos los valores
+                grafico_df[dynamic_variable] = traducir_valores(
+                    grafico_df[dynamic_variable]
+                )
+            
+                grafico_df["Churn"] = traducir_valores(
+                    grafico_df["Churn"]
+                )
+            
+                nombre_dynamic = traducir_variable(
+                    dynamic_variable
+                )
+            
+                fig, ax = plt.subplots()
+            
+                sns.countplot(
+                    data=grafico_df,
+                    x=dynamic_variable,
+                    hue="Churn",
+                    ax=ax
+                )
+            
+                ax.set_title(
+                    f"{nombre_dynamic} vs. abandono "
+                    f"(datos filtrados)"
+                )
+            
+                ax.set_xlabel(
+                    nombre_dynamic
+                )
+            
+                ax.set_ylabel(
+                    "Cantidad de clientes"
+                )
+            
+                ax.legend(
+                    title="Situación del cliente"
+                )
+            
+                ax.tick_params(
+                    axis="x",
+                    rotation=45
+                )
+            
+                 st.pyplot(fig)
 
 
         # ÍTEM 10 — Hallazgos clave
