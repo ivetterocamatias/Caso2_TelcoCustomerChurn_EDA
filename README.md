@@ -31,7 +31,30 @@ El objetivo del proyecto es utilizar un enfoque exploratorio y visual para compr
 ![Hallazgos clave](screenshots/Conclusiones.png)
 
 
+## ¿Cómo ejecutar la aplicación?
 
+Desde:
+
+[streamlit run app.py](https://caso2telco-ivetteroca.streamlit.app/)
+
+La aplicación se abrirá automáticamente en el navegador.
+
+5. Cargar el dataset
+
+Dentro de la aplicación:
+
+Ingresar a 📂 Carga del dataset.
+Seleccionar TelcoCustomerChurn.csv.
+Acceder a 📊 Análisis Exploratorio.
+Explorar las diferentes etapas del EDA.
+Consultar 📝 Conclusiones para revisar los principales hallazgos.
+
+## Links relevantes
+
+Repositorio del proyecto:
+
+Aplicación desplegada:
+https://caso2telco-ivetteroca.streamlit.app/
 
 
 
