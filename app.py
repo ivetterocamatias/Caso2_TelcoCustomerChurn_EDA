@@ -12,6 +12,49 @@ st.set_page_config(
     layout="wide"
 )
 
+# Diccionarios de traducción
+
+columnas_es = {
+    "gender": "Género",
+    "SeniorCitizen": "Cliente mayor de 65 años",
+    "Partner": "Pareja",
+    "Dependents": "Personas a cargo",
+    "tenure": "Antigüedad (meses)",
+    "PhoneService": "Servicio telefónico",
+    "MultipleLines": "Múltiples líneas",
+    "InternetService": "Servicio de Internet",
+    "OnlineSecurity": "Seguridad en línea",
+    "OnlineBackup": "Respaldo en línea",
+    "DeviceProtection": "Protección del dispositivo",
+    "TechSupport": "Soporte técnico",
+    "StreamingTV": "Streaming de TV",
+    "StreamingMovies": "Streaming de películas",
+    "Contract": "Tipo de contrato",
+    "PaperlessBilling": "Facturación electrónica",
+    "PaymentMethod": "Método de pago",
+    "MonthlyCharges": "Cargo mensual",
+    "TotalCharges": "Cargo total",
+    "Churn": "Abandono"
+}
+
+
+valores_es = {
+    "Yes": "Abandonó",
+    "No": "Permaneció",
+    "Male": "Hombre",
+    "Female": "Mujer",
+    "Month-to-month": "Mensual",
+    "One year": "Un año",
+    "Two year": "Dos años",
+    "Electronic check": "Cheque electrónico",
+    "Mailed check": "Cheque por correo",
+    "Bank transfer (automatic)": "Transferencia bancaria (automática)",
+    "Credit card (automatic)": "Tarjeta de crédito (automática)",
+    "DSL": "DSL",
+    "Fiber optic": "Fibra óptica",
+    "No internet service": "Sin servicio de Internet"
+}
+
 
 # Clasificación de variables
 
