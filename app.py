@@ -52,8 +52,19 @@ valores_es = {
     "Credit card (automatic)": "Tarjeta de crédito (automática)",
     "DSL": "DSL",
     "Fiber optic": "Fibra óptica",
-    "No internet service": "Sin servicio de Internet"
+    "No internet service": "Sin servicio de Internet",
+    0: "No",
+    1: "Sí"
 }
+
+# Funciones de traducción
+
+def traducir_variable(variable):
+    return columnas_es.get(variable, variable)
+
+
+def traducir_valores(serie):
+    return serie.map(valores_es).fillna(serie)
 
 
 # Clasificación de variables
@@ -275,14 +286,14 @@ elif opcion == "📊 Análisis Exploratorio":
             "4. Valores faltantes",
             "5. Distribución numérica",
             "6. Variables categóricas",
-            "7. Numérica vs Churn",
-            "8. Categórica vs Churn",
+            "7. Numérica vs abandono",
+            "8. Categórica vs abandono",
             "9. Análisis dinámico",
             "10. Hallazgos"
         ])
 
       
-        # ÍTEM 1 — Iformación general del dataset
+        # ÍTEM 1 — Información general del dataset
  
 
         with tabs[0]:
@@ -333,7 +344,10 @@ elif opcion == "📊 Análisis Exploratorio":
             st.subheader("Tipos de datos")
 
             types_df = pd.DataFrame({
-                "Variable": df.columns,
+                "Variable": [
+                    traducir_variable(col)
+                    for col in df.columns
+                ],
                 "Tipo de dato": df.dtypes.astype(str).values
             })
 
@@ -348,7 +362,10 @@ elif opcion == "📊 Análisis Exploratorio":
             st.subheader("Conteo de valores nulos")
 
             null_df = pd.DataFrame({
-                "Variable": df.columns,
+                "Variable": [
+                    traducir_variable(col)
+                    for col in df.columns
+                ],
                 "Valores nulos": df.isnull().sum().values
             })
 
@@ -383,9 +400,10 @@ elif opcion == "📊 Análisis Exploratorio":
                     f"Cantidad: {len(numeric_vars)}"
                 )
 
-                for variable in numeric_vars:
-                    st.write(f"• {variable}")
-
+            for variable in numeric_vars:
+                st.write(
+                    f"• {traducir_variable(variable)}"
+                )
             
             # Identificación de variales: Variables categóricas
             
@@ -398,9 +416,10 @@ elif opcion == "📊 Análisis Exploratorio":
                     f"Cantidad: {len(categorical_vars)}"
                 )
 
-                for variable in categorical_vars:
-                    st.write(f"• {variable}")
-
+            for variable in numeric_vars:
+                st.write(
+                    f"• {traducir_variable(variable)}"
+                )
         
         # ÍTEM 3 — Estadísticas descriptivas
 
@@ -410,7 +429,10 @@ elif opcion == "📊 Análisis Exploratorio":
 
             # Utilizamos .describe()
 
-            descriptive_stats = df[numeric_vars].describe()
+            descriptive_stats.columns = [
+                traducir_variable(col)
+                for col in descriptive_stats.columns
+            ]
 
             # Mostramos las estadísticas descriptivas
             st.dataframe(
@@ -424,6 +446,7 @@ elif opcion == "📊 Análisis Exploratorio":
             selected_stat_var = st.selectbox(
                 "Selecciona una variable numérica:",
                 numeric_vars,
+                format_func=traducir_variable,
                 key="statistics_variable"
             )
 
@@ -578,6 +601,7 @@ elif opcion == "📊 Análisis Exploratorio":
             selected_numeric = st.selectbox(
                 "Selecciona una variable numérica:",
                 numeric_vars,
+                format_func=traducir_variable,
                 key="distribution_variable"
             )
 
@@ -602,13 +626,15 @@ elif opcion == "📊 Análisis Exploratorio":
             )
 
             # Configuración del gráfico
-
+            
+            nombre_numeric = traducir_variable(selected_numeric)
+            
             ax.set_title(
-                f"Distribución de {selected_numeric}"
+                f"Distribución de {nombre_numeric}"
             )
 
             ax.set_xlabel(
-                selected_numeric
+                nombre_numeric
             )
 
             ax.set_ylabel(
@@ -625,7 +651,7 @@ elif opcion == "📊 Análisis Exploratorio":
             st.write(
                 f"""
                 El histograma muestra la distribución de
-                los valores de ***{selected_numeric}*** para
+                los valores de ***{nombre_numeric}*** para
                 identificar dónde se concentra la mayor parte
                 de los valores, el grado de dispersión, posibles
                 asimetrías y la presencia de valores extremos.
@@ -644,6 +670,7 @@ elif opcion == "📊 Análisis Exploratorio":
             selected_categorical = st.selectbox(
                 "Selecciona una variable categórica:",
                 categorical_vars,
+                format_func=traducir_variable,
                 key="categorical_variable"
             )
 
@@ -665,6 +692,11 @@ elif opcion == "📊 Análisis Exploratorio":
                 "Porcentaje (%)": percentages.round(2)
             })
 
+            categorical_summary.index = [
+                valores_es.get(valor, valor)
+                for valor in categorical_summary.index
+            ]
+
             st.subheader("Conteos y proporciones")
 
             st.dataframe(
@@ -672,7 +704,19 @@ elif opcion == "📊 Análisis Exploratorio":
                 use_container_width=True
             )
 
-            # Gráfico de barras
+            # Creamos una copia solamente para el gráfico
+            
+            grafico_df = df.copy()
+            
+            # Traducimos los valores de la variable seleccionada
+
+            grafico_df[selected_categorical] = traducir_valores(
+                grafico_df[selected_categorical]
+            )
+            
+            nombre_categorical = traducir_variable(
+                selected_categorical
+            )
 
             fig, ax = plt.subplots()
 
@@ -684,6 +728,14 @@ elif opcion == "📊 Análisis Exploratorio":
 
             ax.set_title(
                 f"Distribución de {selected_categorical}"
+            )
+
+            ax.set_xlabel(
+                nombre_categorical
+            )
+            
+            ax.set_ylabel(
+                "Cantidad de clientes"
             )
 
             ax.tick_params(
@@ -699,16 +751,28 @@ elif opcion == "📊 Análisis Exploratorio":
         with tabs[6]:
 
             st.header(
-                "7. Análisis bivariado: variable numérica vs Churn"
+                "7. Análisis bivariado: variable numérica vs abandono"
             )
 
             selected_numeric_churn = st.selectbox(
                 "Selecciona una variable numérica:",
                 numeric_vars,
+                format_func=traducir_variable,
                 key="numeric_churn_variable"
             )
 
             # Boxplot
+
+            grafico_df = df.copy()
+
+            grafico_df["Churn"] = traducir_valores(
+                grafico_df["Churn"]
+            )
+            
+            nombre_numeric_churn = traducir_variable(
+                selected_numeric_churn
+            )
+            
             fig, ax = plt.subplots()
 
             sns.boxplot(
@@ -719,7 +783,15 @@ elif opcion == "📊 Análisis Exploratorio":
             )
 
             ax.set_title(
-                f"{selected_numeric_churn} vs Churn"
+                f"{nombre_numeric_churn} vs Abandono"
+            )
+
+            ax.set_xlabel(
+                "Situación del cliente"
+            )
+            
+            ax.set_ylabel(
+                nombre_numeric_churn
             )
 
             st.pyplot(fig)
@@ -731,6 +803,17 @@ elif opcion == "📊 Análisis Exploratorio":
                 .agg(["mean", "median", "std"])
                 .round(2)
             )
+
+            comparison.index = [
+                valores_es.get(valor, valor)
+                for valor in comparison.index
+            ]
+            
+            comparison.columns = [
+                "Media",
+                "Mediana",
+                "Desviación estándar"
+            ]
 
             st.subheader(
                 "Comparación estadística entre grupos"
@@ -747,35 +830,63 @@ elif opcion == "📊 Análisis Exploratorio":
         with tabs[7]:
 
             st.header(
-                "8. Análisis bivariado: variable categórica vs Churn"
+                "8. Análisis bivariado: variable categórica vs abandono"
             )
 
             selected_categorical_churn = st.selectbox(
                 "Selecciona una variable categórica:",
                 categorical_vars,
+                format_func=traducir_variable,
                 key="categorical_churn_variable"
             )
 
-            # Gráfico de conteos
 
+            # Copia para visualización
+            grafico_df = df.copy()
+            
+            # Traducción de valores
+            grafico_df[selected_categorical_churn] = traducir_valores(
+                grafico_df[selected_categorical_churn]
+            )
+            
+            grafico_df["Churn"] = traducir_valores(
+                grafico_df["Churn"]
+            )
+            
+            nombre_categorical_churn = traducir_variable(
+                selected_categorical_churn
+            )
+            
             fig, ax = plt.subplots()
-
+            
             sns.countplot(
-                data=df,
+                data=grafico_df,
                 x=selected_categorical_churn,
                 hue="Churn",
                 ax=ax
             )
-
+            
             ax.set_title(
-                f"{selected_categorical_churn} vs Churn"
+                f"{nombre_categorical_churn} vs. abandono"
             )
-
+            
+            ax.set_xlabel(
+                nombre_categorical_churn
+            )
+            
+            ax.set_ylabel(
+                "Cantidad de clientes"
+            )
+            
+            ax.legend(
+                title="Situación del cliente"
+            )
+            
             ax.tick_params(
                 axis="x",
                 rotation=45
             )
-
+            
             st.pyplot(fig)
 
             # Proporción de Churn dentro de cada categoría
@@ -787,9 +898,19 @@ elif opcion == "📊 Análisis Exploratorio":
             ) * 100
 
             churn_rate = churn_rate.round(2)
+            
+            churn_rate.index = [
+                valores_es.get(valor, valor)
+                for valor in churn_rate.index
+            ]
+            
+            churn_rate.columns = [
+                valores_es.get(valor, valor)
+                for valor in churn_rate.columns
+            ]
 
             st.subheader(
-                "Proporción de Churn por categoría (%)"
+                "Proporción de abandono por categoría (%)"
             )
 
             st.dataframe(
@@ -817,6 +938,7 @@ elif opcion == "📊 Análisis Exploratorio":
             dynamic_variable = st.selectbox(
                 "Selecciona una variable categórica:",
                 categorical_vars,
+                format_func=traducir_variable,
                 key="dynamic_categorical"
             )
 
@@ -833,7 +955,8 @@ elif opcion == "📊 Análisis Exploratorio":
             selected_categories = st.multiselect(
                 "Selecciona una o más categorías:",
                 available_categories,
-                default=available_categories
+                default=available_categories,
+                format_func=lambda x: valores_es.get(x, x)
             )
 
             # SLIDER
@@ -914,26 +1037,54 @@ elif opcion == "📊 Análisis Exploratorio":
 
             if not filtered_df.empty:
 
-                fig, ax = plt.subplots()
-
-                sns.countplot(
-                    data=filtered_df,
-                    x=dynamic_variable,
-                    hue="Churn",
-                    ax=ax
-                )
-
-                ax.set_title(
-                    f"{dynamic_variable} vs Churn "
-                    f"(datos filtrados)"
-                )
-
-                ax.tick_params(
-                    axis="x",
-                    rotation=45
-                )
-
-                st.pyplot(fig)
+            # Copia para visualización
+            grafico_df = filtered_df.copy()
+        
+            # Traducimos los valores
+            grafico_df[dynamic_variable] = traducir_valores(
+                grafico_df[dynamic_variable]
+            )
+        
+            grafico_df["Churn"] = traducir_valores(
+                grafico_df["Churn"]
+            )
+        
+            nombre_dynamic = traducir_variable(
+                dynamic_variable
+            )
+        
+            fig, ax = plt.subplots()
+        
+            sns.countplot(
+                data=grafico_df,
+                x=dynamic_variable,
+                hue="Churn",
+                ax=ax
+            )
+        
+            ax.set_title(
+                f"{nombre_dynamic} vs. abandono "
+                f"(datos filtrados)"
+            )
+        
+            ax.set_xlabel(
+                nombre_dynamic
+            )
+        
+            ax.set_ylabel(
+                "Cantidad de clientes"
+            )
+        
+            ax.legend(
+                title="Situación del cliente"
+            )
+        
+            ax.tick_params(
+                axis="x",
+                rotation=45
+            )
+        
+             st.pyplot(fig)
 
 
         # ÍTEM 10 — Hallazgos clave
@@ -1132,16 +1283,22 @@ elif opcion == "📊 Análisis Exploratorio":
                 ) * 100
             
                 if "Yes" in contract_churn.columns:
+
+                contrato_mayor_churn = contract_churn["Yes"].idxmax()
+                tasa_mayor_churn = contract_churn["Yes"].max()
+
             
-                    contrato_mayor_churn = contract_churn["Yes"].idxmax()
-                    tasa_mayor_churn = contract_churn["Yes"].max()
+                contrato_mayor_churn_es = valores_es.get(
+                    contrato_mayor_churn,
+                    contrato_mayor_churn
+                )
             
                     st.markdown(
                         f"""
                         🔎 **Insight 4 — Tipo de contrato**
             
                         El tipo de contrato con mayor tasa de churn es
-                        **{contrato_mayor_churn}**, con aproximadamente
+                        **{contrato_mayor_churn_es}**, con aproximadamente
                         **{tasa_mayor_churn:.1f} %** de clientes que abandonaron el servicio.
                         """
                     )
@@ -1160,6 +1317,12 @@ elif opcion == "📊 Análisis Exploratorio":
                 if "Yes" in payment_churn.columns:
             
                     metodo_mayor_churn = payment_churn["Yes"].idxmax()
+                    
+                    metodo_mayor_churn_es = valores_es.get(
+                        metodo_mayor_churn,
+                        metodo_mayor_churn
+                    )
+                    
                     tasa_metodo = payment_churn["Yes"].max()
             
                     st.markdown(
@@ -1167,7 +1330,7 @@ elif opcion == "📊 Análisis Exploratorio":
                         🔎 **Insight 5 — Método de pago**
             
                         El método de pago asociado con la mayor tasa de churn es
-                        **{metodo_mayor_churn}**, con aproximadamente
+                        **{metodo_mayor_churn_es}**, con aproximadamente
                         **{tasa_metodo:.1f}%** de clientes que abandonaron el servicio.
                         """
                     )
@@ -1186,13 +1349,17 @@ elif opcion == "📊 Análisis Exploratorio":
                 if "Yes" in internet_churn.columns:
             
                     servicio_mayor_churn = internet_churn["Yes"].idxmax()
+                    servicio_mayor_churn_es = valores_es.get(
+                        servicio_mayor_churn,
+                        servicio_mayor_churn
+                    )
                     tasa_servicio = internet_churn["Yes"].max()
             
                     st.markdown(
                         f"""
                         🔎 **Insight 6 — Servicio de Internet**
             
-                        Entre los tipos de servicio de Internet, **{servicio_mayor_churn}**
+                        Entre los tipos de servicio de Internet, **{servicio_mayor_churn_es}**
                         presenta la mayor tasa de churn, con aproximadamente
                         **{tasa_servicio:.1f} %**.
                         """
