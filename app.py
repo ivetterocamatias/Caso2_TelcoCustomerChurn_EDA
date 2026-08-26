@@ -1505,13 +1505,8 @@ elif opcion == "📝 Conclusiones":
 
         st.subheader("Conclusiones finales")
 
-        # ==========================================================
-        # CÁLCULO DE MÉTRICAS
-        # ==========================================================
 
-        # ----------------------------------------------------------
         # Métricas generales
-        # ----------------------------------------------------------
 
         total_clientes = len(df)
 
@@ -1531,9 +1526,8 @@ elif opcion == "📝 Conclusiones":
             churn_count / total_clientes * 100
         )
 
-        # ----------------------------------------------------------
+
         # Antigüedad promedio según situación del cliente
-        # ----------------------------------------------------------
 
         tenure_churn = (
             df.groupby("Churn")["tenure"]
@@ -1546,9 +1540,9 @@ elif opcion == "📝 Conclusiones":
         # Diferencia de antigüedad
         diferencia_tenure = tenure_no - tenure_yes
 
-        # ----------------------------------------------------------
+
         # Cargo mensual promedio según situación del cliente
-        # ----------------------------------------------------------
+
 
         charges_churn = (
             df.groupby("Churn")["MonthlyCharges"]
@@ -1560,9 +1554,8 @@ elif opcion == "📝 Conclusiones":
 
         diferencia_cargo = charges_yes - charges_no
 
-        # ----------------------------------------------------------
+
         # Tipo de contrato
-        # ----------------------------------------------------------
 
         contract_churn = pd.crosstab(
             df["Contract"],
@@ -1592,9 +1585,7 @@ elif opcion == "📝 Conclusiones":
             contrato_mayor_churn_es = "No disponible"
             tasa_contrato = 0
 
-        # ----------------------------------------------------------
         # Método de pago
-        # ----------------------------------------------------------
 
         payment_churn = pd.crosstab(
             df["PaymentMethod"],
@@ -1624,9 +1615,8 @@ elif opcion == "📝 Conclusiones":
             metodo_mayor_churn_es = "No disponible"
             tasa_metodo = 0
 
-        # ----------------------------------------------------------
+
         # Servicio de Internet
-        # ----------------------------------------------------------
 
         internet_churn = pd.crosstab(
             df["InternetService"],
@@ -1656,9 +1646,7 @@ elif opcion == "📝 Conclusiones":
             servicio_mayor_churn_es = "No disponible"
             tasa_servicio = 0
 
-        # ==========================================================
         # CONCLUSIÓN 1
-        # ==========================================================
 
         st.markdown(
             f"""
@@ -1679,9 +1667,7 @@ elif opcion == "📝 Conclusiones":
             """
         )
 
-        # ==========================================================
         # CONCLUSIÓN 2
-        # ==========================================================
 
         st.markdown(
             f"""
@@ -1702,9 +1688,8 @@ elif opcion == "📝 Conclusiones":
             """
         )
 
-        # ==========================================================
+
         # CONCLUSIÓN 3
-        # ==========================================================
 
         if diferencia_cargo > 0:
 
@@ -1720,11 +1705,11 @@ elif opcion == "📝 Conclusiones":
 
             texto_cargo = (
                 f"Los clientes que abandonaron presentaron un cargo mensual "
-                f"promedio de **${charges_yes:.2f}**, frente a "
-                f"**${charges_no:.2f}** entre quienes permanecieron. "
+                f"promedio de **USD {charges_yes:.2f}**, frente a "
+                f"**USD {charges_no:.2f}** entre quienes permanecieron. "
                 f"En este caso, los clientes que permanecieron presentaron "
                 f"un cargo mensual promedio aproximadamente "
-                f"**${abs(diferencia_cargo):.2f} mayor**."
+                f"**USD {abs(diferencia_cargo):.2f} mayor**."
             )
 
         else:
@@ -1732,7 +1717,7 @@ elif opcion == "📝 Conclusiones":
             texto_cargo = (
                 f"Los clientes que abandonaron y quienes permanecieron "
                 f"presentaron un cargo mensual promedio similar, de "
-                f"aproximadamente **${charges_yes:.2f}**."
+                f"aproximadamente **USD {charges_yes:.2f}**."
             )
 
         st.markdown(
@@ -1749,9 +1734,8 @@ elif opcion == "📝 Conclusiones":
             """
         )
 
-        # ==========================================================
+
         # CONCLUSIÓN 4
-        # ==========================================================
 
         st.markdown(
             f"""
@@ -1759,7 +1743,7 @@ elif opcion == "📝 Conclusiones":
 
             El tipo de contrato con mayor tasa de abandono fue
             **{contrato_mayor_churn_es}**, con aproximadamente
-            **{tasa_contrato:.1f}%** de sus clientes abandonando el servicio.
+            **{tasa_contrato:.1f} %** de sus clientes abandonando el servicio.
 
             **Implicación para la toma de decisiones:**  
             La empresa debería revisar las condiciones comerciales de este
@@ -1768,9 +1752,8 @@ elif opcion == "📝 Conclusiones":
             """
         )
 
-        # ==========================================================
+
         # CONCLUSIÓN 5
-        # ==========================================================
 
         st.markdown(
             f"""
@@ -1778,11 +1761,11 @@ elif opcion == "📝 Conclusiones":
 
             El método de pago con mayor tasa de abandono fue
             **{metodo_mayor_churn_es}**, con aproximadamente
-            **{tasa_metodo:.1f}%** de sus clientes abandonando el servicio.
+            **{tasa_metodo:.1f} %** de sus clientes abandonando el servicio.
 
             Asimismo, entre los servicios de Internet analizados,
             **{servicio_mayor_churn_es}** presentó la mayor tasa de abandono,
-            con aproximadamente **{tasa_servicio:.1f}%**.
+            con aproximadamente **{tasa_servicio:.1f} %**.
 
             **Implicación para la toma de decisiones:**  
             Estos segmentos deberían ser analizados con mayor profundidad
@@ -1792,9 +1775,8 @@ elif opcion == "📝 Conclusiones":
             """
         )
 
-        # ==========================================================
+
         # CIERRE
-        # ==========================================================
 
         st.info(
             """
