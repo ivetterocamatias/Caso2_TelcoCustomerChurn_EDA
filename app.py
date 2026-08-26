@@ -1171,7 +1171,7 @@ elif opcion == "📊 Análisis Exploratorio":
             with col2:
                 st.metric(
                     "Tasa de abandono",
-                    f"{churn_rate:.1f} %"
+                    f"{tasa_abandono:.1f} %"
                 )
             
             with col3:
