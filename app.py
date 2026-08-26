@@ -422,26 +422,43 @@ elif opcion == "📊 Análisis Exploratorio":
                 )
         
         # ÍTEM 3 — Estadísticas descriptivas
-
+        
         with tabs[2]:
-
+        
             st.header("3. Estadísticas descriptivas")
-
-            # Utilizamos .describe()
-
+        
+            # Utilizamos .describe() sobre las variables numéricas
+            descriptive_stats = df[numeric_vars].describe()
+        
+            # Traducimos los nombres de las variables al español
             descriptive_stats.columns = [
                 traducir_variable(col)
                 for col in descriptive_stats.columns
             ]
-
+        
+            # Traducimos también las medidas estadísticas
+            descriptive_stats.index = [
+                {
+                    "count": "Cantidad",
+                    "mean": "Media",
+                    "std": "Desviación estándar",
+                    "min": "Mínimo",
+                    "25%": "Percentil 25%",
+                    "50%": "Mediana",
+                    "75%": "Percentil 75%",
+                    "max": "Máximo"
+                }.get(index, index)
+                for index in descriptive_stats.index
+            ]
+        
             # Mostramos las estadísticas descriptivas
             st.dataframe(
                 descriptive_stats,
                 use_container_width=True
             )
-
+        
             st.subheader("Medidas principales")
-
+        
             # Selección de variable numérica
             selected_stat_var = st.selectbox(
                 "Selecciona una variable numérica:",
@@ -449,54 +466,51 @@ elif opcion == "📊 Análisis Exploratorio":
                 format_func=traducir_variable,
                 key="statistics_variable"
             )
-
+        
+            # Eliminamos valores faltantes
+            stat_data = df[selected_stat_var].dropna()
+        
             # Calculamos media utilizando NumPy
-            mean_value = np.mean(
-                df[selected_stat_var].dropna()
-            )
-
+            mean_value = np.mean(stat_data)
+        
             # Calculamos mediana utilizando NumPy
-            median_value = np.median(
-                df[selected_stat_var].dropna()
-            )
-
+            median_value = np.median(stat_data)
+        
             # Calculamos moda utilizando Pandas
             mode_value = df[selected_stat_var].mode()
-
+        
             if not mode_value.empty:
                 mode_value = mode_value.iloc[0]
             else:
                 mode_value = "No disponible"
-
+        
             # Mostramos los resultados
-
             col1, col2, col3 = st.columns(3)
-
+        
             with col1:
                 st.metric(
                     "Media",
                     f"{mean_value:.2f}"
                 )
-
+        
             with col2:
                 st.metric(
                     "Mediana",
                     f"{median_value:.2f}"
                 )
-
+        
             with col3:
-
+        
                 if isinstance(mode_value, (int, float, np.integer, np.floating)):
                     mode_display = f"{mode_value:.2f}"
                 else:
                     mode_display = str(mode_value)
-
+        
                 st.metric(
                     "Moda",
                     mode_display
                 )
-
-        
+                
         # ÍTEM 4 — Análisis de valores faltantes
 
         with tabs[3]:
