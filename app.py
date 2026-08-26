@@ -1133,19 +1133,32 @@ elif opcion == "📊 Análisis Exploratorio":
             
             # Cantidad total de clientes
             total_clientes = len(df)
-            
-            # Clientes con churn
-            churn_count = (df["Churn"] == "Yes").sum()
-            
-            # Tasa de churn
-            churn_rate = churn_count / total_clientes * 100
-            
+        
+            # Cantidad de clientes que abandonaron
+            clientes_abandonaron = (
+                df["Churn"]
+                .eq("Yes")
+                .sum()
+            )
+        
+            # Cantidad de clientes que permanecieron
+            clientes_permanecieron = (
+                df["Churn"]
+                .eq("No")
+                .sum()
+            )
+        
+            # Tasa de abandono
+            tasa_abandono = (
+                clientes_abandonaron / total_clientes * 100
+            )
+        
             # Antigüedad promedio
             tenure_promedio = df["tenure"].mean()
-            
+        
             # Cargo mensual promedio
             monthly_charges_promedio = df["MonthlyCharges"].mean()
-            
+                    
             # Mostrar KPIs
             col1, col2, col3, col4 = st.columns(4)
             
@@ -1157,8 +1170,8 @@ elif opcion == "📊 Análisis Exploratorio":
             
             with col2:
                 st.metric(
-                    "Tasa de churn",
-                    f"{churn_rate:.1f}%"
+                    "Tasa de abandono",
+                    f"{churn_rate:.1f} %"
                 )
             
             with col3:
@@ -1175,26 +1188,39 @@ elif opcion == "📊 Análisis Exploratorio":
             
             
          
-            # Distribución del churn
+            # Distribución de clientes según abandono
                        
-            st.subheader("Clientes que permanecieron vs. clientes que abandonaron")
+            st.subheader("Distribución de clientes según situación")
             
-            churn_counts = df["Churn"].map({
-                "Yes": "Abandonó",
-                "No": "Permaneció"
-            }).value_counts()
-            
+            churn_counts = (
+                df["Churn"]
+                .map({
+                    "Yes": "Abandonó",
+                    "No": "Permaneció"
+                })
+                .value_counts()
+            )
+        
             fig, ax = plt.subplots(figsize=(8, 4))
-            
+        
             sns.barplot(
                 x=churn_counts.index,
                 y=churn_counts.values,
                 ax=ax
             )
-            
-            ax.set_xlabel("Situación del cliente")
-            ax.set_ylabel("Cantidad de clientes")
-            ax.set_title("Clientes que permanecieron vs. clientes que abandonaron")
+        
+            ax.set_xlabel(
+                "Situación del cliente"
+            )
+        
+            ax.set_ylabel(
+                "Cantidad de clientes"
+            )
+        
+            ax.set_title(
+                "Distribución de clientes según situación"
+            )
+        
             st.pyplot(fig)
             
             
@@ -1203,15 +1229,18 @@ elif opcion == "📊 Análisis Exploratorio":
             st.subheader("Principales insights")
             
 
-            # Insight 1: Churn general
+            # Insight 1: Abandono general
             
             st.markdown(
                 f"""
                 🔎 **Insight 1 — Churn general**
             
-                De un total de **{total_clientes:,} clientes**, aproximadamente
-                **{churn_rate:.1f} %** abandonaron el servicio. Este porcentaje permite
-                dimensionar la magnitud del problema de churn dentro del conjunto de datos.
+                De clientes_abandonaron:,}** abandonaron el servicio, lo que
+                representa una tasa de abandono de aproximadamente
+                **{tasa_abandono:.1f}%**.
+        
+                En contraste, **{clientes_permanecieron:,} clientes**
+                permanecieron en el servicio.
                 """
             )
             
@@ -1220,83 +1249,114 @@ elif opcion == "📊 Análisis Exploratorio":
             
             if "tenure" in df.columns:
             
-                tenure_churn = df.groupby("Churn")["tenure"].mean()
-            
-                if "Yes" in tenure_churn.index and "No" in tenure_churn.index:
-            
-                    tenure_yes = tenure_churn["Yes"]
-                    tenure_no = tenure_churn["No"]
-            
-                    if tenure_yes < tenure_no:
-            
+                tenure_churn = (
+                    df.groupby("Churn")["tenure"]
+                    .mean()
+                )
+        
+                if (
+                    "Yes" in tenure_churn.index
+                    and "No" in tenure_churn.index
+                ):
+        
+                    tenure_abandono = tenure_churn["Yes"]
+                    tenure_permanencia = tenure_churn["No"]
+        
+                    diferencia_tenure = (
+                        tenure_permanencia - tenure_abandono
+                    )
+        
+                    if diferencia_tenure > 0:
+        
                         st.markdown(
                             f"""
                             🔎 **Insight 2 — Antigüedad**
-            
+        
                             Los clientes que abandonaron el servicio presentan una
-                            antigüedad promedio de **{tenure_yes:.1f} meses**, mientras que
-                            los clientes que permanecieron tienen una antigüedad promedio
-                            de **{tenure_no:.1f} meses**.
-            
-                            Esto sugiere una mayor concentración del churn entre clientes
+                            antigüedad promedio de **{tenure_abandono:.1f} meses**,
+                            mientras que los clientes que permanecieron presentan
+                            una antigüedad promedio de **{tenure_permanencia:.1f} meses**.
+        
+                            La diferencia es de aproximadamente
+                            **{diferencia_tenure:.1f} meses**, lo que sugiere que
+                            el abandono se concentra en mayor medida entre clientes
                             con menor antigüedad.
                             """
                         )
-            
+        
                     else:
-            
+        
                         st.markdown(
                             f"""
                             🔎 **Insight 2 — Antigüedad**
-            
+        
                             Los clientes que abandonaron el servicio presentan una
-                            antigüedad promedio de **{tenure_yes:.1f} meses**, frente a
-                            **{tenure_no:.1f} meses** entre quienes permanecieron.
+                            antigüedad promedio de **{tenure_abandono:.1f} meses**,
+                            frente a **{tenure_permanencia:.1f} meses** entre quienes
+                            permanecieron.
+        
+                            En este caso, la diferencia no indica una menor antigüedad
+                            entre los clientes que abandonaron.
                             """
                         )
-            
+                    
             
             # Insight 3: Cargo mensual
             
             if "MonthlyCharges" in df.columns:
             
-                charges_churn = df.groupby("Churn")["MonthlyCharges"].mean()
-            
-                if "Yes" in charges_churn.index and "No" in charges_churn.index:
-            
-                    charges_yes = charges_churn["Yes"]
-                    charges_no = charges_churn["No"]
-            
-                    diferencia = charges_yes - charges_no
-            
-                    if diferencia > 0:
-            
+                charges_churn = (
+                    df.groupby("Churn")["MonthlyCharges"]
+                    .mean()
+                )
+        
+                if (
+                    "Yes" in charges_churn.index
+                    and "No" in charges_churn.index
+                ):
+        
+                    cargo_abandono = charges_churn["Yes"]
+                    cargo_permanencia = charges_churn["No"]
+        
+                    diferencia_cargo = (
+                        cargo_abandono - cargo_permanencia
+                    )
+        
+                    if diferencia_cargo > 0:
+        
                         st.markdown(
                             f"""
                             🔎 **Insight 3 — Cargo mensual**
-            
+        
                             El cargo mensual promedio de los clientes que abandonaron
-                            el servicio es de **$ {charges_yes:.2f}**, frente a
-                            **$ {charges_no:.2f}** entre quienes permanecieron.
-            
-                            Los clientes con churn presentan, en promedio, un cargo mensual
-                            **$ {diferencia:.2f} mayor**.
+                            el servicio es de **${cargo_abandono:.2f}**, frente a
+                            **${cargo_permanencia:.2f}** entre quienes permanecieron.
+        
+                            Esto representa una diferencia de aproximadamente
+                            **${diferencia_cargo:.2f}**, por lo que los clientes que
+                            abandonaron presentan, en promedio, un cargo mensual mayor.
                             """
                         )
-            
+        
                     else:
-            
+        
+                        diferencia_cargo_abs = abs(diferencia_cargo)
+        
                         st.markdown(
                             f"""
                             🔎 **Insight 3 — Cargo mensual**
-            
+        
                             El cargo mensual promedio de los clientes que abandonaron
-                            el servicio es de **$ {charges_yes:.2f}**, frente a
-                            **$ {charges_no:.2f}** entre quienes permanecieron.
+                            el servicio es de **${cargo_abandono:.2f}**, frente a
+                            **${cargo_permanencia:.2f}** entre quienes permanecieron.
+        
+                            En este conjunto de datos, los clientes que permanecieron
+                            presentan un cargo mensual promedio aproximadamente
+                            **${diferencia_cargo_abs:.2f} mayor**.
                             """
                         )
-            
-            
+
+                        
             # Insight 4: Tipo de contrato
             
             if "Contract" in df.columns:
@@ -1306,28 +1366,38 @@ elif opcion == "📊 Análisis Exploratorio":
                     df["Churn"],
                     normalize="index"
                 ) * 100
-            
+        
                 if "Yes" in contract_churn.columns:
-
-                    contrato_mayor_churn = contract_churn["Yes"].idxmax()
-                    tasa_mayor_churn = contract_churn["Yes"].max()
-    
-                
-                    contrato_mayor_churn_es = valores_es.get(
-                        contrato_mayor_churn,
-                        contrato_mayor_churn
+        
+                    contrato_mayor_abandono = (
+                        contract_churn["Yes"]
+                        .idxmax()
                     )
-            
+        
+                    tasa_contrato_mayor = (
+                        contract_churn["Yes"]
+                        .max()
+                    )
+        
+                    contrato_mayor_abandono_es = valores_es.get(
+                        contrato_mayor_abandono,
+                        contrato_mayor_abandono
+                    )
+        
                     st.markdown(
                         f"""
                         🔎 **Insight 4 — Tipo de contrato**
-            
-                        El tipo de contrato con mayor tasa de churn es
-                        **{contrato_mayor_churn_es}**, con aproximadamente
-                        **{tasa_mayor_churn:.1f} %** de clientes que abandonaron el servicio.
+        
+                        El tipo de contrato con mayor tasa de abandono es
+                        **{contrato_mayor_abandono_es}**, con aproximadamente
+                        **{tasa_contrato_mayor:.1f}%** de sus clientes abandonando
+                        el servicio.
+        
+                        Este resultado indica que el tipo de contrato presenta una
+                        asociación relevante con el comportamiento de abandono.
                         """
                     )
-            
+
             
             # Insight 5: Método de pago
             
@@ -1338,25 +1408,36 @@ elif opcion == "📊 Análisis Exploratorio":
                     df["Churn"],
                     normalize="index"
                 ) * 100
-            
+
                 if "Yes" in payment_churn.columns:
             
-                    metodo_mayor_churn = payment_churn["Yes"].idxmax()
-                    
-                    metodo_mayor_churn_es = valores_es.get(
-                        metodo_mayor_churn,
-                        metodo_mayor_churn
+                    metodo_mayor_abandono = (
+                        payment_churn["Yes"]
+                        .idxmax()
                     )
-                    
-                    tasa_metodo = payment_churn["Yes"].max()
-            
+        
+                    tasa_metodo_mayor = (
+                        payment_churn["Yes"]
+                        .max()
+                    )
+        
+                    metodo_mayor_abandono_es = valores_es.get(
+                        metodo_mayor_abandono,
+                        metodo_mayor_abandono
+                    )
+        
                     st.markdown(
                         f"""
                         🔎 **Insight 5 — Método de pago**
-            
-                        El método de pago asociado con la mayor tasa de churn es
-                        **{metodo_mayor_churn_es}**, con aproximadamente
-                        **{tasa_metodo:.1f}%** de clientes que abandonaron el servicio.
+        
+                        El método de pago asociado con la mayor tasa de abandono es
+                        **{metodo_mayor_abandono_es}**, con aproximadamente
+                        **{tasa_metodo_mayor:.1f}%** de sus clientes abandonando
+                        el servicio.
+        
+                        Este resultado permite identificar un grupo que podría
+                        requerir un análisis más detallado de sus características
+                        y comportamiento.
                         """
                     )
             
@@ -1370,23 +1451,35 @@ elif opcion == "📊 Análisis Exploratorio":
                     df["Churn"],
                     normalize="index"
                 ) * 100
-            
+        
                 if "Yes" in internet_churn.columns:
-            
-                    servicio_mayor_churn = internet_churn["Yes"].idxmax()
-                    servicio_mayor_churn_es = valores_es.get(
-                        servicio_mayor_churn,
-                        servicio_mayor_churn
+        
+                    servicio_mayor_abandono = (
+                        internet_churn["Yes"]
+                        .idxmax()
                     )
-                    tasa_servicio = internet_churn["Yes"].max()
-            
+        
+                    tasa_servicio_mayor = (
+                        internet_churn["Yes"]
+                        .max()
+                    )
+        
+                    servicio_mayor_abandono_es = valores_es.get(
+                        servicio_mayor_abandono,
+                        servicio_mayor_abandono
+                    )
+        
                     st.markdown(
                         f"""
                         🔎 **Insight 6 — Servicio de Internet**
-            
-                        Entre los tipos de servicio de Internet, **{servicio_mayor_churn_es}**
-                        presenta la mayor tasa de churn, con aproximadamente
-                        **{tasa_servicio:.1f} %**.
+        
+                        Entre los tipos de servicio de Internet, **{servicio_mayor_abandono_es}**
+                        presenta la mayor tasa de abandono, con aproximadamente
+                        **{tasa_servicio_mayor:.1f}%** de sus clientes abandonando
+                        el servicio.
+        
+                        Este resultado señala una posible relación entre el tipo de
+                        servicio de Internet contratado y el comportamiento de abandono.
                         """
                     )
             
