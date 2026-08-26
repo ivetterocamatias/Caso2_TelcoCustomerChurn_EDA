@@ -958,9 +958,12 @@ elif opcion == "📊 Análisis Exploratorio":
          
             # Distribución del churn
                        
-            st.subheader("Distribución del churn")
+            st.subheader("Clientes que permanecieron vs. clientes que abandonaron")
             
-            churn_counts = df["Churn"].value_counts()
+            churn_counts = df["Churn"].map({
+                "Yes": "Abandonó",
+                "No": "Permaneció"
+            }).value_counts()
             
             fig, ax = plt.subplots(figsize=(8, 4))
             
@@ -970,10 +973,9 @@ elif opcion == "📊 Análisis Exploratorio":
                 ax=ax
             )
             
-            ax.set_xlabel("Churn")
+            ax.set_xlabel("Situación del cliente")
             ax.set_ylabel("Cantidad de clientes")
-            ax.set_title("Distribución de clientes según churn")
-            
+            ax.set_title("Clientes que permanecieron vs. clientes que abandonaron")
             st.pyplot(fig)
             
             
