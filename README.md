@@ -16,6 +16,10 @@ El objetivo del proyecto es utilizar un enfoque exploratorio y visual para compr
 
 ### Página principal
 
+![Página principal](screenshots/Home.png)
+
+
+
 
 
 
