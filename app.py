@@ -400,11 +400,11 @@ elif opcion == "📊 Análisis Exploratorio":
                     f"Cantidad: {len(numeric_vars)}"
                 )
 
-            for variable in numeric_vars:
-                st.write(
-                    f"• {traducir_variable(variable)}"
-                )
-            
+                for variable in numeric_vars:
+                    st.write(
+                        f"• {traducir_variable(variable)}"
+                    )
+                
             # Identificación de variales: Variables categóricas
             
 
