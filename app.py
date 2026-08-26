@@ -1331,7 +1331,7 @@ elif opcion == "📊 Análisis Exploratorio":
         
                             El cargo mensual promedio de los clientes que abandonaron
                             el servicio es de **USD {cargo_abandono:.2f}**, frente a 
-                            **${cargo_permanencia:.2f}** entre quienes permanecieron.
+                            **USD {cargo_permanencia:.2f}** entre quienes permanecieron.
         
                             Esto representa una diferencia de aproximadamente 
                             **USD {diferencia_cargo:.2f}**, por lo que los clientes que
@@ -1348,12 +1348,12 @@ elif opcion == "📊 Análisis Exploratorio":
                             🔎 **Insight 3 — Cargo mensual**
         
                             El cargo mensual promedio de los clientes que abandonaron
-                            el servicio es de **${cargo_abandono:.2f}**, frente a 
-                            **${cargo_permanencia:.2f}** entre quienes permanecieron.
+                            el servicio es de **USD {cargo_abandono:.2f}**, frente a 
+                            **USD {cargo_permanencia:.2f}** entre quienes permanecieron.
         
                             En este conjunto de datos, los clientes que permanecieron
                             presentan un cargo mensual promedio aproximadamente 
-                            **${diferencia_cargo_abs:.2f} mayor**.
+                            **USD {diferencia_cargo_abs:.2f} mayor**.
                             """
                         )
 
