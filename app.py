@@ -1489,37 +1489,138 @@ elif opcion == "📊 Análisis Exploratorio":
 
 elif opcion == "📝 Conclusiones":
 
-    st.header("Conclusiones finales")
+            st.subheader("Conclusiones finales")
 
-    st.write(
-        """
-        Las siguientes conclusiones deberán construirse a partir
-        de los resultados obtenidos durante el Análisis Exploratorio
-        de Datos.
-        """
-    )
+            # ----------------------------------------------------------
+            # CONCLUSIÓN 1
+            # ----------------------------------------------------------
 
-    st.subheader("Conclusión 1")
-    st.write(
-        "Completar después de analizar los resultados."
-    )
+            st.markdown(
+                f"""
+                ### 1. El abandono de clientes representa un problema relevante
 
-    st.subheader("Conclusión 2")
-    st.write(
-        "Completar después de analizar los resultados."
-    )
+                Del total de **{total_clientes:,} clientes analizados**, 
+                **{churn_count:,} abandonaron el servicio**, lo que representa
+                una tasa de abandono de aproximadamente **{churn_rate:.1f}%**.
 
-    st.subheader("Conclusión 3")
-    st.write(
-        "Completar después de analizar los resultados."
-    )
+                **Implicación para la toma de decisiones:**  
+                La empresa debería considerar la retención de clientes como un
+                aspecto prioritario de gestión, destinando acciones de
+                seguimiento y fidelización a los segmentos donde se concentra
+                una mayor proporción de abandonos.
+                """
+            )
 
-    st.subheader("Conclusión 4")
-    st.write(
-        "Completar después de analizar los resultados."
-    )
+            # ----------------------------------------------------------
+            # CONCLUSIÓN 2
+            # ----------------------------------------------------------
 
-    st.subheader("Conclusión 5")
-    st.write(
-        "Completar después de analizar los resultados."
-    )
+            st.markdown(
+                f"""
+                ### 2. Los clientes con menor antigüedad presentan mayor abandono
+
+                La antigüedad promedio de los clientes que abandonaron el servicio
+                fue de **{tenure_yes:.1f} meses**, mientras que entre quienes
+                permanecieron fue de **{tenure_no:.1f} meses**.
+
+                **Implicación para la toma de decisiones:**  
+                La empresa debería reforzar las estrategias de incorporación,
+                acompañamiento y fidelización durante los primeros meses de
+                relación con el cliente, ya que esta etapa representa una
+                oportunidad importante para fortalecer la permanencia.
+                """
+            )
+
+            # ----------------------------------------------------------
+            # CONCLUSIÓN 3
+            # ----------------------------------------------------------
+
+            if diferencia_cargo > 0:
+
+                texto_cargo = (
+                    f"Los clientes que abandonaron presentaron un cargo mensual "
+                    f"promedio de **${charges_yes:.2f}**, frente a **${charges_no:.2f}** "
+                    f"entre quienes permanecieron. La diferencia promedio fue de "
+                    f"**${diferencia_cargo:.2f}**."
+                )
+
+            else:
+
+                texto_cargo = (
+                    f"Los clientes que abandonaron presentaron un cargo mensual "
+                    f"promedio de **${charges_yes:.2f}**, frente a **${charges_no:.2f}** "
+                    f"entre quienes permanecieron."
+                )
+
+            st.markdown(
+                f"""
+                ### 3. El cargo mensual presenta diferencias entre los grupos
+
+                {texto_cargo}
+
+                **Implicación para la toma de decisiones:**  
+                La empresa debería revisar la estructura de precios y los servicios
+                asociados a los planes con cargos mensuales elevados, procurando
+                que el valor percibido por el cliente sea consistente con el costo
+                del servicio.
+                """
+            )
+
+            # ----------------------------------------------------------
+            # CONCLUSIÓN 4
+            # ----------------------------------------------------------
+
+            st.markdown(
+                f"""
+                ### 4. El tipo de contrato está asociado con diferencias importantes en el abandono
+
+                El tipo de contrato con mayor tasa de abandono fue
+                **{contrato_mayor_churn_es}**, con aproximadamente
+                **{tasa_contrato:.1f}%** de clientes que abandonaron el servicio.
+
+                **Implicación para la toma de decisiones:**  
+                La empresa debería revisar las condiciones comerciales de este
+                tipo de contrato y evaluar estrategias de fidelización que
+                incentiven relaciones contractuales de mayor duración.
+                """
+            )
+
+            # ----------------------------------------------------------
+            # CONCLUSIÓN 5
+            # ----------------------------------------------------------
+
+            st.markdown(
+                f"""
+                ### 5. El método de pago y el servicio contratado permiten identificar segmentos de atención prioritaria
+
+                El método de pago con mayor tasa de abandono fue
+                **{metodo_mayor_churn_es}**, con aproximadamente
+                **{tasa_metodo:.1f}%** de churn.
+
+                Asimismo, entre los servicios de Internet analizados,
+                **{servicio_mayor_churn_es}** presentó la mayor tasa de abandono,
+                con aproximadamente **{tasa_servicio:.1f}%**.
+
+                **Implicación para la toma de decisiones:**  
+                Estos segmentos deberían ser analizados con mayor profundidad
+                para identificar posibles problemas relacionados con la
+                experiencia del cliente, el servicio contratado o el proceso
+                de pago, y así orientar acciones específicas de retención.
+                """
+            )
+
+            # ==========================================================
+            # CIERRE
+            # ==========================================================
+
+            st.info(
+                """
+                **Conclusión general del EDA:**  
+                Los resultados muestran que el abandono de clientes no se distribuye
+                de manera uniforme. Las diferencias observadas según antigüedad,
+                cargo mensual, tipo de contrato, método de pago y servicio de
+                Internet permiten identificar segmentos que requieren una mayor
+                atención. Estos hallazgos pueden utilizarse como base para diseñar
+                estrategias de fidelización y mejora de la experiencia del cliente.
+                """
+            )
