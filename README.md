@@ -52,6 +52,7 @@ Consultar 📝 Conclusiones para revisar los principales hallazgos.
 ## Links relevantes
 
 Repositorio del proyecto:
+https://github.com/ivetterocamatias/Caso2_TelcoCustomerChurn_EDA.git
 
 Aplicación desplegada:
 https://caso2telco-ivetteroca.streamlit.app/
