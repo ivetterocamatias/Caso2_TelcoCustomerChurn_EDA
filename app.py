@@ -1295,14 +1295,14 @@ elif opcion == "📊 Análisis Exploratorio":
             
                 if "Yes" in contract_churn.columns:
 
-                contrato_mayor_churn = contract_churn["Yes"].idxmax()
-                tasa_mayor_churn = contract_churn["Yes"].max()
-
-            
-                contrato_mayor_churn_es = valores_es.get(
-                    contrato_mayor_churn,
-                    contrato_mayor_churn
-                )
+                    contrato_mayor_churn = contract_churn["Yes"].idxmax()
+                    tasa_mayor_churn = contract_churn["Yes"].max()
+    
+                
+                    contrato_mayor_churn_es = valores_es.get(
+                        contrato_mayor_churn,
+                        contrato_mayor_churn
+                    )
             
                     st.markdown(
                         f"""
