@@ -1120,10 +1120,10 @@ elif opcion == "📊 Análisis Exploratorio":
 
             st.write(
                 """
-                Esta sección resume los principales patrones identificados durante el
-                análisis exploratorio de datos (EDA), destacando el comportamiento del
-                churn y las variables que presentan diferencias relevantes entre clientes
-                que permanecen y clientes que abandonan el servicio.
+                Esta sección resume los principales patrones identificados durante
+                el análisis exploratorio de datos (EDA), destacando el comportamiento
+                del abandono de clientes y las variables que presentan diferencias
+                relevantes entre quienes permanecen y quienes abandonan el servicio.
                 """
             )
 
