@@ -1235,7 +1235,8 @@ elif opcion == "📊 Análisis Exploratorio":
                 f"""
                 🔎 **Insight 1 — Churn general**
             
-                De {clientes_abandonaron:,}** abandonaron el servicio, lo que
+                De un total de **{total_clientes:,} clientes**, 
+                **{clientes_abandonaron:,}** abandonaron el servicio, lo que
                 representa una tasa de abandono de aproximadamente
                 **{tasa_abandono:.1f}%**.
         
