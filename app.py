@@ -901,74 +901,259 @@ elif opcion == "📊 Análisis Exploratorio":
 
             st.write(
                 """
-                Esta sección resume los principales patrones
-                identificados durante el análisis exploratorio.
-                Las conclusiones deben basarse en los resultados
-                observados en las tablas y visualizaciones.
+                Esta sección resume los principales patrones identificados durante el
+                análisis exploratorio de datos (EDA), destacando el comportamiento del
+                churn y las variables que presentan diferencias relevantes entre clientes
+                que permanecen y clientes que abandonan el servicio.
                 """
             )
 
-            # Distribución general del Churn
+            # Resumen visual
 
-            churn_distribution = (
-                df["Churn"]
-                .value_counts(normalize=True)
-                * 100
-            )
-
-            churn_yes = churn_distribution.get(
-                "Yes",
-                0
-            )
-
-            churn_no = churn_distribution.get(
-                "No",
-                0
-            )
-
-            col1, col2 = st.columns(2)
-
+            st.subheader("Resumen del dataset")
+            
+            # Cantidad total de clientes
+            total_clientes = len(df)
+            
+            # Clientes con churn
+            churn_count = (df["Churn"] == "Yes").sum()
+            
+            # Tasa de churn
+            churn_rate = churn_count / total_clientes * 100
+            
+            # Antigüedad promedio
+            tenure_promedio = df["tenure"].mean()
+            
+            # Cargo mensual promedio
+            monthly_charges_promedio = df["MonthlyCharges"].mean()
+            
+            # Mostrar KPIs
+            col1, col2, col3, col4 = st.columns(4)
+            
             with col1:
-
                 st.metric(
-                    "Clientes que abandonaron",
-                    f"{churn_yes:.2f}%"
+                    "Total de clientes",
+                    f"{total_clientes:,}"
                 )
-
+            
             with col2:
-
                 st.metric(
-                    "Clientes que permanecieron",
-                    f"{churn_no:.2f}%"
+                    "Tasa de churn",
+                    f"{churn_rate:.1f}%"
                 )
-
-
-            # Gráfico general de Churn
-
-            fig, ax = plt.subplots()
-
-            sns.countplot(
-                data=df,
-                x="Churn",
+            
+            with col3:
+                st.metric(
+                    "Antigüedad promedio",
+                    f"{tenure_promedio:.1f} meses"
+                )
+            
+            with col4:
+                st.metric(
+                    "Cargo mensual promedio",
+                    f"${monthly_charges_promedio:.2f}"
+                )
+            
+            
+         
+            # Distribución del churn
+                       
+            st.subheader("Distribución del churn")
+            
+            churn_counts = df["Churn"].value_counts()
+            
+            fig, ax = plt.subplots(figsize=(8, 4))
+            
+            sns.barplot(
+                x=churn_counts.index,
+                y=churn_counts.values,
                 ax=ax
             )
-
-            ax.set_title(
-                "Distribución general de Churn"
-            )
-
+            
+            ax.set_xlabel("Churn")
+            ax.set_ylabel("Cantidad de clientes")
+            ax.set_title("Distribución de clientes según churn")
+            
             st.pyplot(fig)
+            
+            
+            # Principales insights
+            
+            st.subheader("Principales insights")
+            
 
-
-            # Mensaje de interpretación
-
-            st.info(
-                "Los hallazgos definitivos deben redactarse "
-                "a partir de la comparación de las variables "
-                "analizadas en los tabs anteriores."
+            # Insight 1: Churn general
+            
+            st.markdown(
+                f"""
+                🔎 **Insight 1 — Churn general**
+            
+                De un total de **{total_clientes:,} clientes**, aproximadamente
+                **{churn_rate:.1f} %** abandonaron el servicio. Este porcentaje permite
+                dimensionar la magnitud del problema de churn dentro del conjunto de datos.
+                """
             )
-
-
+            
+            
+            # Insight 2: Antigüedad
+            
+            if "tenure" in df.columns:
+            
+                tenure_churn = df.groupby("Churn")["tenure"].mean()
+            
+                if "Yes" in tenure_churn.index and "No" in tenure_churn.index:
+            
+                    tenure_yes = tenure_churn["Yes"]
+                    tenure_no = tenure_churn["No"]
+            
+                    if tenure_yes < tenure_no:
+            
+                        st.markdown(
+                            f"""
+                            🔎 **Insight 2 — Antigüedad**
+            
+                            Los clientes que abandonaron el servicio presentan una
+                            antigüedad promedio de **{tenure_yes:.1f} meses**, mientras que
+                            los clientes que permanecieron tienen una antigüedad promedio
+                            de **{tenure_no:.1f} meses**.
+            
+                            Esto sugiere una mayor concentración del churn entre clientes
+                            con menor antigüedad.
+                            """
+                        )
+            
+                    else:
+            
+                        st.markdown(
+                            f"""
+                            🔎 **Insight 2 — Antigüedad**
+            
+                            Los clientes que abandonaron el servicio presentan una
+                            antigüedad promedio de **{tenure_yes:.1f} meses**, frente a
+                            **{tenure_no:.1f} meses** entre quienes permanecieron.
+                            """
+                        )
+            
+            
+            # Insight 3: Cargo mensual
+            
+            if "MonthlyCharges" in df.columns:
+            
+                charges_churn = df.groupby("Churn")["MonthlyCharges"].mean()
+            
+                if "Yes" in charges_churn.index and "No" in charges_churn.index:
+            
+                    charges_yes = charges_churn["Yes"]
+                    charges_no = charges_churn["No"]
+            
+                    diferencia = charges_yes - charges_no
+            
+                    if diferencia > 0:
+            
+                        st.markdown(
+                            f"""
+                            🔎 **Insight 3 — Cargo mensual**
+            
+                            El cargo mensual promedio de los clientes que abandonaron
+                            el servicio es de **$ {charges_yes:.2f}**, frente a
+                            **$ {charges_no:.2f}** entre quienes permanecieron.
+            
+                            Los clientes con churn presentan, en promedio, un cargo mensual
+                            **$ {diferencia:.2f} mayor**.
+                            """
+                        )
+            
+                    else:
+            
+                        st.markdown(
+                            f"""
+                            🔎 **Insight 3 — Cargo mensual**
+            
+                            El cargo mensual promedio de los clientes que abandonaron
+                            el servicio es de **$ {charges_yes:.2f}**, frente a
+                            **$ {charges_no:.2f}** entre quienes permanecieron.
+                            """
+                        )
+            
+            
+            # Insight 4: Tipo de contrato
+            
+            if "Contract" in df.columns:
+            
+                contract_churn = pd.crosstab(
+                    df["Contract"],
+                    df["Churn"],
+                    normalize="index"
+                ) * 100
+            
+                if "Yes" in contract_churn.columns:
+            
+                    contrato_mayor_churn = contract_churn["Yes"].idxmax()
+                    tasa_mayor_churn = contract_churn["Yes"].max()
+            
+                    st.markdown(
+                        f"""
+                        🔎 **Insight 4 — Tipo de contrato**
+            
+                        El tipo de contrato con mayor tasa de churn es
+                        **{contrato_mayor_churn}**, con aproximadamente
+                        **{tasa_mayor_churn:.1f} %** de clientes que abandonaron el servicio.
+                        """
+                    )
+            
+            
+            # Insight 5: Método de pago
+            
+            if "PaymentMethod" in df.columns:
+            
+                payment_churn = pd.crosstab(
+                    df["PaymentMethod"],
+                    df["Churn"],
+                    normalize="index"
+                ) * 100
+            
+                if "Yes" in payment_churn.columns:
+            
+                    metodo_mayor_churn = payment_churn["Yes"].idxmax()
+                    tasa_metodo = payment_churn["Yes"].max()
+            
+                    st.markdown(
+                        f"""
+                        🔎 **Insight 5 — Método de pago**
+            
+                        El método de pago asociado con la mayor tasa de churn es
+                        **{metodo_mayor_churn}**, con aproximadamente
+                        **{tasa_metodo:.1f}%** de clientes que abandonaron el servicio.
+                        """
+                    )
+            
+            
+            # Insight 6: Servicio de Internet
+            
+            if "InternetService" in df.columns:
+            
+                internet_churn = pd.crosstab(
+                    df["InternetService"],
+                    df["Churn"],
+                    normalize="index"
+                ) * 100
+            
+                if "Yes" in internet_churn.columns:
+            
+                    servicio_mayor_churn = internet_churn["Yes"].idxmax()
+                    tasa_servicio = internet_churn["Yes"].max()
+            
+                    st.markdown(
+                        f"""
+                        🔎 **Insight 6 — Servicio de Internet**
+            
+                        Entre los tipos de servicio de Internet, **{servicio_mayor_churn}**
+                        presenta la mayor tasa de churn, con aproximadamente
+                        **{tasa_servicio:.1f} %**.
+                        """
+                    )
+            
+            
 
 # CONCLUSIONES
 
