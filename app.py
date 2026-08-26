@@ -205,7 +205,7 @@ elif opcion == "📂 Carga del dataset":
     st.header("Carga del dataset")
 
     st.write(
-        "Selecciona el archivo TelcoCustomerChurn.csv"
+        "Selecciona el archivo TelcoCustomerChurn.csv "
         "para comenzar el análisis."
     )
 
