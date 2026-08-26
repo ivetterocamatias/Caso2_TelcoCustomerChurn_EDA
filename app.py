@@ -1695,10 +1695,10 @@ elif opcion == "📝 Conclusiones":
 
             texto_cargo = (
                 f"Los clientes que abandonaron presentaron un cargo mensual "
-                f"promedio de **${charges_yes:.2f}**, frente a "
-                f"**${charges_no:.2f}** entre quienes permanecieron. "
+                f"promedio de **USD {charges_yes:.2f}**, frente a "
+                f"**USD {charges_no:.2f}** entre quienes permanecieron. "
                 f"La diferencia promedio fue de "
-                f"**${diferencia_cargo:.2f}**."
+                f"**USD {diferencia_cargo:.2f}**."
             )
 
         elif diferencia_cargo < 0:
