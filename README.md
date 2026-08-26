@@ -18,6 +18,16 @@ El objetivo del proyecto es utilizar un enfoque exploratorio y visual para compr
 
 ![Página principal](screenshots/Home.png)
 
+### Carga del dataset
+
+![Carga del dataset](screenshots/Carga_del_dataset.png)
+
+### Conclusiones
+
+![Hallazgos clave](screenshots/Conclusiones.png)
+
+
+
 
 
 
