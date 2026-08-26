@@ -416,10 +416,10 @@ elif opcion == "📊 Análisis Exploratorio":
                     f"Cantidad: {len(categorical_vars)}"
                 )
 
-            for variable in numeric_vars:
-                st.write(
-                    f"• {traducir_variable(variable)}"
-                )
+                for variable in numeric_vars:
+                    st.write(
+                        f"• {traducir_variable(variable)}"
+                    )
         
         # ÍTEM 3 — Estadísticas descriptivas
         
@@ -735,13 +735,13 @@ elif opcion == "📊 Análisis Exploratorio":
             fig, ax = plt.subplots()
 
             sns.countplot(
-                data=df,
+                data=grafico_df,
                 x=selected_categorical,
                 ax=ax
             )
 
             ax.set_title(
-                f"Distribución de {selected_categorical}"
+                f"Distribución de {nombre_categorical}"
             )
 
             ax.set_xlabel(
