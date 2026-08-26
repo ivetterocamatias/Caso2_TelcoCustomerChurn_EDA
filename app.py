@@ -1233,7 +1233,7 @@ elif opcion == "📊 Análisis Exploratorio":
             
             st.markdown(
                 f"""
-                🔎 **Insight 1 — Churn general**
+                🔎 **Insight 1 — Abandono general**
             
                 De un total de **{total_clientes:,} clientes**, 
                 **{clientes_abandonaron:,}** abandonaron el servicio, lo que
@@ -1354,6 +1354,7 @@ elif opcion == "📊 Análisis Exploratorio":
                             En este conjunto de datos, los clientes que permanecieron
                             presentan un cargo mensual promedio aproximadamente
                             **${diferencia_cargo_abs:.2f} mayor**.
+                            """
                             """
                         )
 
