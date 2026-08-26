@@ -1355,7 +1355,6 @@ elif opcion == "📊 Análisis Exploratorio":
                             presentan un cargo mensual promedio aproximadamente
                             **${diferencia_cargo_abs:.2f} mayor**.
                             """
-                            """
                         )
 
                         
