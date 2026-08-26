@@ -416,7 +416,7 @@ elif opcion == "📊 Análisis Exploratorio":
                     f"Cantidad: {len(categorical_vars)}"
                 )
 
-                for variable in numeric_vars:
+                for variable in categorical_vars:
                     st.write(
                         f"• {traducir_variable(variable)}"
                     )
